@@ -27,7 +27,8 @@ class Game:
             node = no_child
         A = A[:-1]
         P = [solution for solution in P if node.player in P]
-        #l'idea qui è usare la ricorsione
+        # l'idea qui è usare la ricorsione
+        # fare il nodo root, il nodo "no" e la ricorsione siu "no", il nodo "si" e la ricorsione su "si"
         return root
 
     #   permutations = list(it.permutations(self.players))
