@@ -11,24 +11,35 @@ class Game:
         for player in players:
             self.directions[player] = 1  # the in (1) or out (0) question for each agent
 
-    def compute_tree(self, solutions, players):
+    def compute_tree(self, solutions, players, bids, a=0):
+        if len(solutions) < 1:
+            return
         P = solutions
-        I = set()
         A = players
-        node = Node(A(0), self.directions(A(0)), solutions=P,
-                    bid=self.bids(-1) if self.directions(A(0)) else self.bids(0))
+        node = Node(A(a), self.directions(A(a)), solutions=P,
+                    bid=bids(-1) if self.directions(A(a)) else bids(0))
         root = node
-        for player in A[1:]:
-            # tutti i nodi "no"
-            no_child = Node(player, self.directions(player), solutions=P,
-                            bid=self.bids(-1) if self.directions(player) else self.bids(0))
-            node.no = no_child
-            no_child.parent = node
-            node = no_child
-        A = A[:-1]
-        P = [solution for solution in P if node.player in P]
-        # l'idea qui è usare la ricorsione
-        # fare il nodo root, il nodo "no" e la ricorsione siu "no", il nodo "si" e la ricorsione su "si"
+        # A_I = [x for x in A if x not in I]  # players in A not present in I
+
+        # "no" side of node
+        if a < len(A):  # otherwise it never ends
+            node = self.compute_tree(P, A, bids, a + 1)
+            root.no = node
+            node.parent = root
+
+        # "yes" side of node
+        P_t = [solution for solution in P if root.player in P]
+        if not P_t:
+            # there aren't suitable solutions
+            # I.add(root.player)
+            pass
+        else:
+            P = P_t
+            bids = bids[:-1] if self.directions(A(a)) else bids[1:]
+        A = A[:a] + A[a + 1:]
+        node = self.compute_tree(P, A, bids)
+        root.yes = node
+        node.parent = root
         return root
 
     #   permutations = list(it.permutations(self.players))
