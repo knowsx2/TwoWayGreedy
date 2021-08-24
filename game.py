@@ -12,30 +12,31 @@ class Game:
             self.directions[player] = 1  # the in (1) or out (0) question for each agent
 
     def compute_tree(self, solutions, players, bids, a=0):
-        if len(solutions) < 1:
-            return
         P = solutions
         A = players
-        node = Node(A(a), self.directions(A(a)), solutions=P,
-                    bid=bids(-1) if self.directions(A(a)) else bids(0))
+        node = Node(A[a], self.directions[A[a]], solutions=P,
+                    bid=bids[-1] if self.directions[A[a]] else bids[0])
         root = node
+
+        if len(solutions) <= 1:
+            return root
         # A_I = [x for x in A if x not in I]  # players in A not present in I
 
         # "no" side of node
-        if a < len(A):  # otherwise it never ends
+        if a < len(A)-1:  # otherwise it never ends
             node = self.compute_tree(P, A, bids, a + 1)
             root.no = node
             node.parent = root
 
         # "yes" side of node
-        P_t = [solution for solution in P if root.player in P]
+        P_t = [solution for solution in P if root.player in solution]
         if not P_t:
             # there aren't suitable solutions
             # I.add(root.player)
             pass
         else:
             P = P_t
-            bids = bids[:-1] if self.directions(A(a)) else bids[1:]
+            bids = bids[:-1] if self.directions[A[a]] else bids[1:]
         A = A[:a] + A[a + 1:]
         node = self.compute_tree(P, A, bids)
         root.yes = node
