@@ -37,3 +37,8 @@ class Node:
 
     def set_no(self, node):
         self.no = node
+
+    def __str__(self):
+        string = "player: " + self.player +"\n" + "direction: " + self.direction + "\n" + "bid: " + self.bid
+        return string
+
