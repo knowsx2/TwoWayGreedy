@@ -2,7 +2,6 @@ from my_exceptions import BidError
 
 
 class Agent:
-
     """
     Class represents a player of a game.
     Each player has: a name, a domain of valuation and a private bid
@@ -28,6 +27,7 @@ class Agent:
     Exception
         the bid isn't present in val_domain
     """
+
     def __init__(self, name, val_domain, bid):
         self.name = name
         self.domain = sorted(val_domain)
@@ -53,3 +53,6 @@ class Agent:
             self.bid = bid
         else:
             raise BidError("the bid is not present in val_domain")
+
+    def __str__(self):
+        return self.name

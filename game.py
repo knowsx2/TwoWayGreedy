@@ -17,6 +17,7 @@ class Game:
         node = Node(A[a], self.directions[A[a]], solutions=P,
                     bid=bids[-1] if self.directions[A[a]] else bids[0])
         root = node
+        print(root)
 
         if len(solutions) <= 1:
             return root

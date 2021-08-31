@@ -5,7 +5,7 @@
 
 from game import Game
 from agent import Agent
-from sklearn import tree
+
 
 def main():
     b1, b2, b3 = 10, 22, 36
@@ -14,9 +14,9 @@ def main():
     a2 = Agent("a2", [10, 22, 36], 22)
     a3 = Agent("a3", [10, 22, 36], 36)
     players = [a1, a2, a3]
-    soluctions = [[a1], [a2, a3]]
-    game = Game(players, bids, soluctions)
-    game.compute_tree(soluctions, players, bids)
+    solutions = [[a1], [a2, a3]]
+    game = Game(players, bids, solutions)
+    game.compute_tree(solutions, players, bids)
     return
 
 
