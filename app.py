@@ -1,5 +1,6 @@
 import wx
 
+
 class App(wx.App):
     def OnInit(self):
         self.frame = [Frame()]
@@ -24,11 +25,11 @@ class Frame(wx.Frame):
 
 def print_node_on_frame(node, frame, pos=None):
     pos = [0, 0] if pos is None else pos
-    st = wx.StaticText(frame.pnl, pos=pos, size=wx.Size(30, 30), label=str(node), style=wx.ALIGN_RIGHT)
+    st = wx.StaticText(frame.pnl, pos=pos, size=wx.Size(70, 60), label=str(node), style=wx.ALIGN_CENTER)
     font = st.GetFont()
     st.SetFont(font)
 
     sizer = wx.BoxSizer(wx.VERTICAL)
     sizer.Add(st, wx.SizerFlags().Border(wx.TOP | wx.LEFT, 25))
     frame.pnl.SetSizer(sizer)
-    return pos, wx.Size(30,30)
+    return pos, wx.Size(70, 60)
