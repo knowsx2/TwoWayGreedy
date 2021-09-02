@@ -26,7 +26,9 @@ class Frame(wx.Frame):
 
 def print_node_on_frame(node, frame):
     st = wx.StaticText(frame.pnl, label=display(node), style=wx.ALIGN_LEFT)
-
+    font = wx.Font()
+    font.SetFamily(wx.FONTFAMILY_MODERN)
+    st.SetFont(font)
     sizer = wx.BoxSizer(wx.VERTICAL)
     sizer.Add(st, wx.SizerFlags().Border(wx.TOP | wx.LEFT, 25))
     frame.pnl.SetSizer(sizer)
@@ -82,5 +84,5 @@ def display_aux(node):
     elif q < p:
         yes += [m * ' '] * (p - q)
     zipped_lines = zip(no, yes)
-    lines = [first_line, second_line] + [a + u * '  ' + b for a, b in zipped_lines]
+    lines = [first_line, second_line] + [a + u * ' ' + b for a, b in zipped_lines]
     return lines, n + m + u, max(p, q) + 2, n + u // 2
