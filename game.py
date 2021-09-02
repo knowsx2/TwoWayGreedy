@@ -44,5 +44,7 @@ class Game:
         node.parent = root
         return root
 
-    #   permutations = list(it.permutations(self.players))
-    #   for order in permutations:
+    def compute_all_trees(self):
+        permutations = list(it.permutations(self.players))
+        for order in permutations:
+            yield self.compute_tree(self.solutions, order, self.bids)

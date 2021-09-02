@@ -14,6 +14,7 @@ def run_app(root):
     print_node_on_frame(root, app.frame[1])
     print(display(root))
     app.MainLoop()
+
 def main():
     b1, b2, b3 = 10, 22, 36
     bids = [b1, b2, b3]
@@ -23,8 +24,11 @@ def main():
     players = [a1, a2, a3]
     solutions = [[a1], [a2, a3]]
     game = Game(players, bids, solutions)
-    root = game.compute_tree(solutions, players, bids)
-    run_app(root)
+    app = App(0)
+    for tree in game.compute_all_trees():
+        app.add_frame()
+        print_node_on_frame(tree, app.frame[-1])
+    app.MainLoop()
     return
 
 

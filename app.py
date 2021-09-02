@@ -3,12 +3,14 @@ import wx
 
 class App(wx.App):
     def OnInit(self):
-        self.frame = [Frame()]
+        self.frame = []
+        """
         # viene mostrata la finestra
         for a in self.frame:
             a.Show()
         # imposta la finestra principale
         self.SetTopWindow(self.frame[0])
+        """
         return 1
 
     def add_frame(self):
