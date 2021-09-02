@@ -3,13 +3,12 @@ from node import Node
 
 
 class Game:
-    def __init__(self, players, bids, solutions):
+    def __init__(self, players, directions, bids, solutions):
         self.bids = sorted(bids)
         self.players = players
-        self.directions = {}
+        self.directions = {players[i]: directions[i] for i in range(len(players))}
         self.solutions = solutions
-        for player in players:
-            self.directions[player] = 1  # the in (1) or out (0) question for each agent
+        #self.directions[player] = 1  # the in (1) or out (0) question for each agent
 
     def compute_tree(self, solutions, players, bids, a=0):
         P = solutions
@@ -17,14 +16,13 @@ class Game:
         node = Node(A[a], self.directions[A[a]], solutions=P,
                     bid=bids[-1] if self.directions[A[a]] else bids[0])
         root = node
-        print(root)
 
         if len(solutions) <= 1:
             return root
         # A_I = [x for x in A if x not in I]  # players in A not present in I
 
         # "no" side of node
-        if a < len(A)-1:  # otherwise it never ends
+        if a < len(A) - 1:  # otherwise it never ends
             node = self.compute_tree(P, A, bids, a + 1)
             root.no = node
             node.parent = root
@@ -48,3 +46,9 @@ class Game:
         permutations = list(it.permutations(self.players))
         for order in permutations:
             yield self.compute_tree(self.solutions, order, self.bids)
+
+
+def all_directions_games(players, bids, solutions):
+    directions = list(it.product([0, 1], repeat=len(players)))
+    for direction in directions:
+        yield Game(players, direction, bids, solutions)

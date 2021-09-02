@@ -3,7 +3,7 @@
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
-from game import Game
+from game import *
 from agent import Agent
 from app import *
 
@@ -23,11 +23,11 @@ def main():
     a3 = Agent("a3", [10, 22, 36], 36)
     players = [a1, a2, a3]
     solutions = [[a1], [a2, a3]]
-    game = Game(players, bids, solutions)
     app = App(0)
-    for tree in game.compute_all_trees():
-        app.add_frame()
-        print_node_on_frame(tree, app.frame[-1])
+    for game in all_directions_games(players, bids, solutions):
+        for tree in game.compute_all_trees():
+            app.add_frame()
+            print_node_on_frame(tree, app.frame[-1])
     app.MainLoop()
     return
 
