@@ -11,10 +11,8 @@ def run_app(root):
     app = App(0)
     print_node_on_frame(root, app.frame[0])
     app.add_frame()
-    pos, size = print_node_on_frame(root, app.frame[1])
-    print(pos + size)
-    print_node_on_frame(root, app.frame[1], wx.Point(tuple(pos + size)))
-
+    print_node_on_frame(root, app.frame[1])
+    print(display(root))
     app.MainLoop()
 def main():
     b1, b2, b3 = 10, 22, 36

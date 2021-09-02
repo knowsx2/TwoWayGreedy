@@ -39,6 +39,6 @@ class Node:
         self.no = node
 
     def __str__(self):
-        string = "player: " + str(self.player) +"\n" + "direction: " + str(self.direction) + "\n" + "bid: " + str(self.bid)
+        string = "player: " + str(self.player) +" | " + "direction: " + str(self.direction) + " | " + "bid: " + str(self.bid)
         return string
 
