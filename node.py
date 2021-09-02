@@ -39,6 +39,7 @@ class Node:
         self.no = node
 
     def __str__(self):
-        string = "player: " + str(self.player) +" | " + "direction: " + str(self.direction) + " | " + "bid: " + str(self.bid)
+        string = "ply: " + str(self.player) +" | " + "dir: " + str(self.direction) + " | " + "bid: " + str(self.bid)\
+                 + " | " + "sol:: " + str(self.available_solutions)
         return string
 
