@@ -16,11 +16,11 @@ def run_app(root):
     app.MainLoop()
 
 def main():
-    b1, b2, b3 = 10, 22, 36
+    b1, b2, b3 = 8, 17, 36
     bids = [b1, b2, b3]
-    a1 = Agent("a1", [10, 22, 36], 10)
-    a2 = Agent("a2", [10, 22, 36], 22)
-    a3 = Agent("a3", [10, 22, 36], 36)
+    a1 = Agent("a1", [8, 17, 36], 8)
+    a2 = Agent("a2", [8, 17, 36], 17)
+    a3 = Agent("a3", [8, 17, 36], 36)
     players = [a1, a2, a3]
     solutions = [[a1], [a2, a3]]
     app = App(0)

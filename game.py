@@ -1,7 +1,13 @@
 import itertools as it
 from node import Node
 
+# escludere gli alberi che non danno soluzioni ottimali (se includo qualcuno la peggior soluzione in cui è presente
+# deve essere migliore di tutte le altre in cui non è presente). Questa cosa tiene conto dei sub domini, ovvero se
+# qualcuno risponde no, la bid non farà più parte del suo dominio
 
+# l'ordine degli agenti non si alterna per forza
+
+#la stessa bid può essere fatta da più agenti
 class Game:
     def __init__(self, players, directions, bids, solutions):
         self.bids = sorted(bids)
