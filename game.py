@@ -22,6 +22,10 @@ class Game:
     def compute_all_trees(self):
         return list(trees(self.players, self.directions, self.domains, self.solutions))
 
+    def __str__(self):
+        string = "bid: " + str(self.bids) + " | " + "sol: " + str(self.solutions) + " | " + "ply: " + str(self.players) \
+                 + " | " + "dirs: " + str(self.directions) + " | " + "dms: " + str(self.domains)
+        return string
 
 def elaborate_trees(node):
     if node is None:
@@ -130,3 +134,6 @@ def is_query_possible(directions, node):
         wrost = min([solution for solution in node.solutions if node.player not in solution], key=a_sum)
         best = max([solution for solution in node.solutions if node.player in solution], key=out_val)
         return True if a_sum(wrost) > out_val(best) else False
+
+
+

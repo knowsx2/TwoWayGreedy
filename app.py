@@ -13,16 +13,16 @@ class App(wx.App):
         """
         return 1
 
-    def add_frame(self):
-        self.frame.append(Frame())
+    def add_frame(self, name="Prova"):
+        self.frame.append(Frame(name))
         self.frame[-1].Show()
         self.SetTopWindow(self.frame[-1])
 
 
 class Frame(wx.Frame):
-    def __init__(self):
+    def __init__(self, name):
         # Chiama il costruttore di wxFrame.
-        wx.Frame.__init__(self, None, -1, "Prova")
+        wx.Frame.__init__(self, None, -1, name)
         self.pnl = wx.Panel(self)
 
 
