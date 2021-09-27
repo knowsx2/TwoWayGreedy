@@ -1,9 +1,9 @@
 class Node:
-    def __init__(self, player, direction, bid, solutions):
+    def __init__(self, solutions, player=None, direction=None, bid=None ):
         self.player = player
         self.direction = direction
         self.bid = bid
-        self.available_solutions = solutions
+        self.solutions = solutions
         self.yes = None
         self.no = None
         self.parent = None
@@ -40,6 +40,6 @@ class Node:
 
     def __str__(self):
         string = "ply: " + str(self.player) +" | " + "dir: " + str(self.direction) + " | " + "bid: " + str(self.bid)\
-                 + " | " + "sol:: " + str(self.available_solutions)
+                 + " | " + "sol:: " + str(self.solutions)
         return string
 
