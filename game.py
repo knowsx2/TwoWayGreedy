@@ -19,61 +19,6 @@ class Game:
         self.solutions = solutions
         # self.directions[player] = 1  # the in (1) or out (0) question for each agent
 
-    '''
-    def compute_tree(self, solutions, players, bids, a=0):
-        P = solutions
-        A = players
-        node = Node(A[a], self.directions[A[a]], solutions=P,
-                    bid=bids[-1] if self.directions[A[a]] else bids[0])
-
-        if len(solutions) <= 1:
-            return node
-
-        if is_query_possible(self.directions, node):
-            root = node
-        else:
-            root = None
-            return root
-
-
-        # A_I = [x for x in A if x not in I]  # players in A not present in I
-
-        # "no" side of node
-        if a < len(A) - 1:  # otherwise it never ends
-            node = self.compute_tree(P, A, bids, a + 1)
-            root.no = node
-            if node is not None:
-                node.parent = root
-
-        # "yes" side of node
-        P_t = [solution for solution in P if root.player in solution]
-        if not P_t:
-            # there aren't suitable solutions
-            # I.add(root.player)
-            pass
-        else:
-            P = P_t
-            bids = bids[:-1] if self.directions[A[a]] else bids[1:]
-        A = A[:a] + A[a + 1:]
-        node = self.compute_tree(P, A, bids)
-        root.yes = node
-        if node is not None:
-            node.parent = root
-        return root
-
-    def compute_all_trees(self):
-        permutations = self.all_possible_orders()
-        for order in permutations:
-            yield self.compute_tree(self.solutions, order, self.bids)
-
-    def all_possible_orders(self):
-        players = []
-        for i in range(len(self.players)):
-            players += [self.players[i]] * len(self.domains[self.players[i]])
-        print(players)
-        return list(it.permutations(players))
-    '''
-
     def compute_all_trees(self):
         return list(trees(self.players, self.directions, self.domains, self.solutions))
 
@@ -83,7 +28,7 @@ def elaborate_trees(node):
         return [node]
     if node.no is None and node.yes is None:
         return [node]
-    alls=[]
+    alls = []
     couples = list(it.product(node.no, node.yes))
     for couple in couples:
         for no_child in elaborate_trees(couple[0]):
@@ -92,9 +37,6 @@ def elaborate_trees(node):
                 node.yes = yes_child
                 alls.append(node)
     return alls
-
-
-
 
 
 def trees(players, directions, domains, solutions):
@@ -182,9 +124,9 @@ def possible_queries(players, directions, domains, solutions):
 def is_query_possible(directions, node):
     if directions[node.player]:
         wrost = min([solution for solution in node.solutions if node.player in solution], key=in_val)
-        best = max([solution for solution in node.solutions if node.player not in solution], key=in_val)
+        best = max([solution for solution in node.solutions if node.player not in solution], key=a_sum)
         return True if in_val(wrost) > in_val(best) else False
     else:
-        wrost = min([solution for solution in node.solutions if node.player not in solution], key=out_val)
+        wrost = min([solution for solution in node.solutions if node.player not in solution], key=a_sum)
         best = max([solution for solution in node.solutions if node.player in solution], key=out_val)
-        return True if out_val(wrost) > out_val(best) else False
+        return True if a_sum(wrost) > out_val(best) else False
