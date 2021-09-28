@@ -29,6 +29,7 @@ def main():
 
     for game in all_directions_games(players, bids, solutions):
         for trees in game.compute_all_trees():
+            print(trees)
             for tree in list(elaborate_trees(trees)):
                 app.add_frame(str(game.directions))
                 print_node_on_frame(tree, app.frame[-1])

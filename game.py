@@ -27,20 +27,22 @@ class Game:
                  + " | " + "dirs: " + str(self.directions) + " | " + "dms: " + str(self.domains)
         return string
 
+
 def elaborate_trees(node):
     if node is None:
         return [node]
     if node.no is None and node.yes is None:
         return [node]
-    alls = []
+    nodes = []
     couples = list(it.product(node.no, node.yes))
     for couple in couples:
         for no_child in elaborate_trees(couple[0]):
             for yes_child in elaborate_trees(couple[1]):
-                node.no = no_child
-                node.yes = yes_child
-                alls.append(node)
-    return alls
+                node_copy = copy.deepcopy(node)
+                node_copy.no = no_child
+                node_copy.yes = yes_child
+                nodes.append(node_copy)
+    return nodes
 
 
 def trees(players, directions, domains, solutions):
@@ -134,6 +136,3 @@ def is_query_possible(directions, node):
         wrost = min([solution for solution in node.solutions if node.player not in solution], key=a_sum)
         best = max([solution for solution in node.solutions if node.player in solution], key=out_val)
         return True if a_sum(wrost) > out_val(best) else False
-
-
-
