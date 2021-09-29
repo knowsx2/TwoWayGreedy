@@ -136,3 +136,13 @@ def is_query_possible(directions, node):
         wrost = min([solution for solution in node.solutions if node.player not in solution], key=a_sum)
         best = max([solution for solution in node.solutions if node.player in solution], key=out_val)
         return True if a_sum(wrost) > out_val(best) else False
+
+
+def check_solutioned_tree(node):
+    if node.player is None:
+        return True
+    if node.no is None or node.yes is None:
+        return False
+    if node.no.player is None and node.yes.player is None:
+        return True
+    return check_solutioned_tree(node.no) and check_solutioned_tree(node.yes)

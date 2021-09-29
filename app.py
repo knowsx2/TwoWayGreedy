@@ -1,5 +1,5 @@
 import wx
-
+from game import check_solutioned_tree
 
 class App(wx.App):
     def OnInit(self):
@@ -23,14 +23,18 @@ class Frame(wx.Frame):
     def __init__(self, name):
         # Chiama il costruttore di wxFrame.
         wx.Frame.__init__(self, None, -1, name)
-        self.pnl = wx.Panel(self)
+        self.pnl = wx.ScrolledWindow(self, -1)
+        self.pnl.SetScrollbars(1, 1, 600, 400)
 
 
 def print_node_on_frame(node, frame):
     st = wx.StaticText(frame.pnl, label=display(node), style=wx.ALIGN_LEFT)
     font = wx.Font()
     font.SetFamily(wx.FONTFAMILY_MODERN)
+    #font.SetPointSize(40)
     st.SetFont(font)
+    if not check_solutioned_tree(node):
+        frame.SetBackgroundColour('#E52B50')
     sizer = wx.BoxSizer(wx.VERTICAL)
     sizer.Add(st, wx.SizerFlags().Border(wx.TOP | wx.LEFT, 25))
     frame.pnl.SetSizer(sizer)
