@@ -39,7 +39,8 @@ class Node:
         self.no = node
 
     def __str__(self):
-        string = "ply: " + str(self.player) +" | " + "dir: " + str(self.direction) + " | " + "bid: " + str(self.bid)\
+        strdir = "in" if self.direction == 1 else "out"
+        string = "ply: " + str(self.player) +" | " + "dir: " + strdir + " | " + "bid: " + str(self.bid)\
                  + " | " + "sol:: " + str(self.solutions)
         return string
 

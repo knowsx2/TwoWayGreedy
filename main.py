@@ -30,7 +30,7 @@ def main():
     for game in all_directions_games(players, bids, solutions):
         for trees in game.compute_all_trees():
             for tree in list(elaborate_trees(trees)):
-                app.add_frame(str(game.directions))
+                app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
                 print_node_on_frame(tree, app.frame[-1])
     app.MainLoop()
     return
