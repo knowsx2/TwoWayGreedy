@@ -53,15 +53,22 @@ def trees(players, directions, domains, solutions):
             # "no" side of node
             no_domains = copy.copy(domains)
             no_players = copy.copy(players)
-            no_domains[node.player] = no_domains[node.player][:-1] if directions[node.player] else \
-                no_domains[node.player][1:]  # reduce sub domain
             no_solutions = copy.copy(solutions)
+            no_directions = copy.copy(directions)
+            if node.direction is not directions[node.player]:
+                # interleaving
+                no_directions[node.player] = node.direction
+                no_domains[node.player] = [domains[node.player][-1]] if directions[node.player] \
+                    else [domains[node.player][0]]
+            else:
+                no_domains[node.player] = no_domains[node.player][:-1] if directions[node.player] else \
+                    no_domains[node.player][1:]  # reduce sub domain
             if not no_domains[node.player]:
                 no_players.remove(node.player)
                 no_domains.pop(node.player)
                 no_solutions = [solution for solution in solutions if node.player not in solution]
 
-            node.no = list(trees(no_players, directions, no_domains, no_solutions))
+            node.no = list(trees(no_players, no_directions, no_domains, no_solutions))
             if not node.no:
                 node.no = [None]
             # "yes" side of node
@@ -92,18 +99,18 @@ def possible_queries(players, directions, domains, solutions):
     def in_val(sol):
         value = 0
         for agent in sol:
-            value += domains[agent][-1] if agent is player else domains[agent][0]
+            value += bid if agent is player else domains[agent][0]
         return value
 
     def out_val(sol):
         value = 0
         for agent in sol:
-            value += domains[agent][0] if agent is player else domains[agent][-1]
+            value += bid if agent is player else domains[agent][-1]
         return value
 
     def a_sum(sol):
         value = 0
-        if directions[player]:
+        if dire:
             for agent in sol:
                 value += domains[agent][-1]
         else:
@@ -111,12 +118,25 @@ def possible_queries(players, directions, domains, solutions):
                 value += domains[agent][0]
         return value
 
+    def is_query_possible(node):
+        if node.direction:
+            wrost = min([solution for solution in node.solutions if node.player in solution], key=in_val)
+            best = max([solution for solution in node.solutions if node.player not in solution], key=a_sum)
+            return True if in_val(wrost) > a_sum(best) else False
+        else:
+            wrost = min([solution for solution in node.solutions if node.player not in solution], key=a_sum)
+            best = max([solution for solution in node.solutions if node.player in solution], key=out_val)
+            return True if a_sum(wrost) > out_val(best) else False
+
+    fl_inter = True
     for player in players:
-        if directions[player]:
+        dire = directions[player]
+        if dire:
             bid = domains[player][-1]
             wrost = min([solution for solution in solutions if player in solution], key=in_val)
             best = max([solution for solution in solutions if player not in solution], key=a_sum)
             if in_val(wrost) > a_sum(best):
+                fl_inter = False
                 yield Node(solutions, player, directions[player], bid)
 
         else:
@@ -124,19 +144,16 @@ def possible_queries(players, directions, domains, solutions):
             wrost = min([solution for solution in solutions if player not in solution], key=a_sum)
             best = max([solution for solution in solutions if player in solution], key=out_val)
             if a_sum(wrost) > out_val(best):
+                fl_inter = False
                 yield Node(solutions, player, directions[player], bid)
 
-
-def is_query_possible(directions, node):
-    if directions[node.player]:
-        wrost = min([solution for solution in node.solutions if node.player in solution], key=in_val)
-        best = max([solution for solution in node.solutions if node.player not in solution], key=a_sum)
-        return True if in_val(wrost) > in_val(best) else False
-    else:
-        wrost = min([solution for solution in node.solutions if node.player not in solution], key=a_sum)
-        best = max([solution for solution in node.solutions if node.player in solution], key=out_val)
-        return True if a_sum(wrost) > out_val(best) else False
-
+        if fl_inter:
+            if len(domains[player]) >= 2:
+                dire = 1-dire
+                bid = domains[player][-2] if directions[player] else domains[player][1]
+                node = Node(solutions, player, 1 - directions[player], bid)
+                if is_query_possible(node):
+                    yield node
 
 def check_solutioned_tree(node):
     if node.player is None:
