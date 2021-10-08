@@ -46,6 +46,29 @@ def elaborate_trees(node):
 
 
 def trees(players, directions, domains, solutions):
+    def check_solutions(players, domains, solutions):
+        sol_min, minimun, maximum = solutions[0], solutions[0], \
+                                    sum(max(domains[agent] for agent in players)), \
+                                    sum(min(domains[agent] for agent in players))
+        for sol in solutions:
+            sum = 0
+            for agent in sol:
+                sum += min(domains[agent])
+                if sum < minimum:
+                    minimum = sum
+                    sol_min = sol
+        for sol in solutions:
+            sum = 0
+            for agent in sol:
+                sum += max(domains[agent])
+                if sum > maximum:
+                    maximum = sum
+                    sol_max = sol
+        if sol_max == sol_min:
+            return sol_max
+        if minimum > maximum:
+            return sol_min
+        return None
     if len(solutions) <= 1:
         yield Node(solutions)
     else:
@@ -67,6 +90,10 @@ def trees(players, directions, domains, solutions):
                 no_players.remove(node.player)
                 no_domains.pop(node.player)
                 no_solutions = [solution for solution in solutions if node.player not in solution]
+            if len(no_domains[node.player]) == 1:
+                if check_solutions(players, no_domains, solutions) is not None:
+                    node.no = []
+                no_players.remove(node.player)
 
             node.no = list(trees(no_players, no_directions, no_domains, no_solutions))
             if not node.no:
@@ -147,7 +174,8 @@ def possible_queries(players, directions, domains, solutions):
                 fl_inter = False
                 yield Node(solutions, player, directions[player], bid)
 
-        if fl_inter:
+    if fl_inter:
+        for player in players:
             if len(domains[player]) >= 2:
                 dire = 1-dire
                 bid = domains[player][-2] if directions[player] else domains[player][1]
