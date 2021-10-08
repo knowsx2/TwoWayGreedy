@@ -1,6 +1,7 @@
 import itertools as it
 from node import Node
 import copy
+from builtins import sum
 
 
 # escludere gli alberi che non danno soluzioni ottimali (se includo qualcuno la peggior soluzione in cui è presente
@@ -46,29 +47,18 @@ def elaborate_trees(node):
 
 
 def trees(players, directions, domains, solutions):
-    def check_solutions(players, domains, solutions):
-        sol_min, minimun, maximum = solutions[0], solutions[0], \
-                                    sum(max(domains[agent] for agent in players)), \
-                                    sum(min(domains[agent] for agent in players))
+    def check_solutions(domains, solutions):
+        maximum = [sum(max(domains[agent] for agent in sol)) for sol in solutions]
+        i = 0
         for sol in solutions:
-            sum = 0
+            summ = 0
             for agent in sol:
-                sum += min(domains[agent])
-                if sum < minimum:
-                    minimum = sum
-                    sol_min = sol
-        for sol in solutions:
-            sum = 0
-            for agent in sol:
-                sum += max(domains[agent])
-                if sum > maximum:
-                    maximum = sum
-                    sol_max = sol
-        if sol_max == sol_min:
-            return sol_max
-        if minimum > maximum:
-            return sol_min
+                summ += min(domains[agent])
+            if all(summ > boh for boh in maximum[:i] + maximum[i + 1:]):
+                return sol
+            i += 1
         return None
+
     if len(solutions) <= 1:
         yield Node(solutions)
     else:
@@ -91,9 +81,10 @@ def trees(players, directions, domains, solutions):
                 no_domains.pop(node.player)
                 no_solutions = [solution for solution in solutions if node.player not in solution]
             if len(no_domains[node.player]) == 1:
-                if check_solutions(players, no_domains, solutions) is not None:
-                    node.no = []
-                no_players.remove(node.player)
+                sol = check_solutions(no_domains, solutions)
+                if sol is not None:
+                    no_solutions = [sol]
+                # no_players.remove(node.player)
 
             node.no = list(trees(no_players, no_directions, no_domains, no_solutions))
             if not node.no:
@@ -177,11 +168,12 @@ def possible_queries(players, directions, domains, solutions):
     if fl_inter:
         for player in players:
             if len(domains[player]) >= 2:
-                dire = 1-dire
+                dire = 1 - directions[player]
                 bid = domains[player][-2] if directions[player] else domains[player][1]
-                node = Node(solutions, player, 1 - directions[player], bid)
+                node = Node(solutions, player, dire, bid)
                 if is_query_possible(node):
                     yield node
+
 
 def check_solutioned_tree(node):
     if node.player is None:

@@ -27,12 +27,12 @@ def main():
     solutions = [[a1], [a2, a3]]
     app = App(0)
 
-    #for game in all_directions_games(players, bids, solutions):
-    game = Game(players, (0,1,1), bids, solutions)
-    for trees in game.compute_all_trees():
-        for tree in list(elaborate_trees(trees)):
-            app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
-            print_node_on_frame(tree, app.frame[-1])
+    for game in all_directions_games(players, bids, solutions):
+    #game = Game(players, (0,1,1), bids, solutions)
+        for trees in game.compute_all_trees():
+            for tree in list(elaborate_trees(trees)):
+                app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
+                print_node_on_frame(tree, app.frame[-1])
     app.MainLoop()
     return
 
