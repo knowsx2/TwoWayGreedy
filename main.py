@@ -18,7 +18,7 @@ def run_app(root):
 
 
 def main():
-    b1, b2, b3 = 8, 17, 36
+    b1, b2, b3 = 10, 12, 36#8, 17, 36
     bids = [b1, b2, b3]
     a1 = Agent("a1", bids, bids[0])
     a2 = Agent("a2", bids, bids[1])
@@ -28,7 +28,7 @@ def main():
     app = App(0)
 
     for game in all_directions_games(players, bids, solutions):
-    #game = Game(players, (0,1,1), bids, solutions)
+    #game = Game(players, (1,1,0), bids, solutions)
         for trees in game.compute_all_trees():
             for tree in list(elaborate_trees(trees)):
                 app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))

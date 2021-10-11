@@ -1,7 +1,7 @@
 import itertools as it
 from node import Node
 import copy
-from builtins import sum
+from builtins import sum, max, min
 
 
 # escludere gli alberi che non danno soluzioni ottimali (se includo qualcuno la peggior soluzione in cui è presente
@@ -48,17 +48,20 @@ def elaborate_trees(node):
 
 def trees(players, directions, domains, solutions):
     def check_solutions(domains, solutions):
-        maximum = [sum(max(domains[agent] for agent in sol)) for sol in solutions]
+        if len(solutions) <= 1:
+            return solutions
+        maximum = [sum(max(domains[agent]) for agent in sol) for sol in solutions]
         i = 0
         for sol in solutions:
             summ = 0
             for agent in sol:
                 summ += min(domains[agent])
             if all(summ > boh for boh in maximum[:i] + maximum[i + 1:]):
-                return sol
+                return [sol]
             i += 1
-        return None
+        return solutions
 
+    solutions = check_solutions(domains, solutions)
     if len(solutions) <= 1:
         yield Node(solutions)
     else:
@@ -80,10 +83,8 @@ def trees(players, directions, domains, solutions):
                 no_players.remove(node.player)
                 no_domains.pop(node.player)
                 no_solutions = [solution for solution in solutions if node.player not in solution]
-            if len(no_domains[node.player]) == 1:
-                sol = check_solutions(no_domains, solutions)
-                if sol is not None:
-                    no_solutions = [sol]
+            elif len(no_domains[node.player]) == 1:
+                no_solutions = check_solutions(no_domains, solutions)
                 # no_players.remove(node.player)
 
             node.no = list(trees(no_players, no_directions, no_domains, no_solutions))
