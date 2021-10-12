@@ -18,13 +18,13 @@ def run_app(root):
 
 
 def main():
-    b1, b2, b3 = 10, 12, 36#8, 17, 36
+    b1, b2, b3 = 10, 11, 12#8, 17, 36
     bids = [b1, b2, b3]
     a1 = Agent("a1", bids, bids[0])
     a2 = Agent("a2", bids, bids[1])
     a3 = Agent("a3", bids, bids[2])
     players = [a1, a2, a3]
-    solutions = [[a1], [a2, a3]]
+    solutions = [[a1], [a2, a3], [a1, a3]]
     app = App(0)
 
     for game in all_directions_games(players, bids, solutions):

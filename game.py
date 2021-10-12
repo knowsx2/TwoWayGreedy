@@ -61,10 +61,35 @@ def trees(players, directions, domains, solutions):
             i += 1
         return solutions
 
+    def filter_solutions(domains, solutions):
+        if len(solutions) <= 1:
+            return solutions, None
+        minimum = [sum(min(domains[agent]) for agent in sol) for sol in solutions]
+        i = 0
+        for sol in solutions:
+            summ = 0
+            for agent in sol:
+                summ += max(domains[agent])
+            if any(summ < boh for boh in minimum[:i] + minimum[i + 1:]):
+                solutions.remove(sol)
+                minimum = minimum[:i] + minimum[i + 1:]
+            i += 1
+        agents = []
+        for sol in solutions:
+            for agent in sol:
+                if agent not in agents:
+                    agents.append(agent)
+        return solutions, agents
+
+    solutions, surv_agents = filter_solutions(domains, solutions)
     solutions = check_solutions(domains, solutions)
     if len(solutions) <= 1:
         yield Node(solutions)
     else:
+        if surv_agents is not None:
+            for player in players:
+                if player not in surv_agents:
+                    players.remove(player)
         for node in list(possible_queries(players, directions, domains, solutions)):
             # "no" side of node
             no_domains = copy.copy(domains)
@@ -149,6 +174,8 @@ def possible_queries(players, directions, domains, solutions):
 
     fl_inter = True
     for player in players:
+        if all(player in sol for sol in solutions):
+            continue
         dire = directions[player]
         if dire:
             bid = domains[player][-1]
@@ -168,6 +195,8 @@ def possible_queries(players, directions, domains, solutions):
 
     if fl_inter:
         for player in players:
+            if all(player in sol for sol in solutions):
+                continue
             if len(domains[player]) >= 2:
                 dire = 1 - directions[player]
                 bid = domains[player][-2] if directions[player] else domains[player][1]
