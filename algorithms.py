@@ -17,3 +17,19 @@ def twowaygreedy(agents, solutions):
         else:
             I.add(i)
     return P.pop()
+
+
+def search_last_nodes(node):
+    nodes = []
+    if node is None:
+        return nodes
+    if node.player is None:
+        return nodes
+    if node.no is None or node.yes is None:
+        nodes.append(node)
+        return nodes
+    return nodes + search_last_nodes(node.no) + search_last_nodes(node.yes)
+
+
+def euch_search(tree):
+    nodes = search_last_nodes(tree)

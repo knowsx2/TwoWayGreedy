@@ -1,5 +1,5 @@
 class Node:
-    def __init__(self, solutions, player=None, direction=None, bid=None ):
+    def __init__(self, solutions, player=None, direction=None, bid=None):
         self.player = player
         self.direction = direction
         self.bid = bid
@@ -40,7 +40,6 @@ class Node:
 
     def __str__(self):
         strdir = "in" if self.direction == 1 else "out"
-        string = "ply: " + str(self.player) +" | " + "dir: " + strdir + " | " + "bid: " + str(self.bid)\
+        string = "ply: " + str(self.player) + " | " + "dir: " + strdir + " | " + "bid: " + str(self.bid) \
                  + " | " + "sol:: " + str(self.solutions)
         return string
-
