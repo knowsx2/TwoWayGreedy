@@ -32,7 +32,7 @@ def elaborate_trees(node):
     for couple in couples:
         for no_child in elaborate_trees(couple[0]):
             for yes_child in elaborate_trees(couple[1]):
-                node_copy = copy.deepcopy(node)
+                node_copy = copy.copy(node)
                 node_copy.no = no_child
                 node_copy.yes = yes_child
                 if no_child is not None:
@@ -47,7 +47,7 @@ def trees(players, directions, domains, solutions):
     def check_solutions(domains, solutions):
         if len(solutions) <= 1:
             return solutions
-        _players = copy.deepcopy(players)
+        _players = copy.copy(players)
         for player in players:
             if any(player not in sol for sol in solutions):
                 _players.append(player)
@@ -57,7 +57,7 @@ def trees(players, directions, domains, solutions):
             summ = 0
             for agent in sol:
                 summ += min(domains[agent]) if agent in _players else 0
-            if all(summ > boh for boh in maximum[:i] + maximum[i + 1:]):
+            if all(summ >= boh for boh in maximum[:i] + maximum[i + 1:]):
                 return [sol]
             i += 1
         return solutions
@@ -65,7 +65,7 @@ def trees(players, directions, domains, solutions):
     def filter_solutions(domains, solutions):
         if len(solutions) <= 1:
             return solutions, None
-        _players = copy.deepcopy(players)
+        _players = copy.copy(players)
         for player in players:
             if any(player not in sol for sol in solutions):
                 _players.append(player)
@@ -75,7 +75,7 @@ def trees(players, directions, domains, solutions):
             summ = 0
             for agent in sol:
                 summ += max(domains[agent]) if agent in _players else 0
-            if any(summ < boh for boh in minimum[:i] + minimum[i + 1:]):
+            if any(summ <= boh for boh in minimum[:i] + minimum[i + 1:]):
                 solutions.remove(sol)
                 minimum = minimum[:i] + minimum[i + 1:]
             i += 1
@@ -114,8 +114,8 @@ def trees(players, directions, domains, solutions):
                 no_players.remove(node.player)
                 no_domains.pop(node.player)
                 no_solutions = [solution for solution in solutions if node.player not in solution]
-            elif len(no_domains[node.player]) == 1:
-                no_solutions = check_solutions(no_domains, solutions)
+            #elif len(no_domains[node.player]) == 1:
+             #   no_solutions = check_solutions(no_domains, solutions)
                 # no_players.remove(node.player)
 
             node.no = list(trees(no_players, no_directions, no_domains, no_solutions))
@@ -131,7 +131,7 @@ def trees(players, directions, domains, solutions):
                 yes_players = copy.copy(players)
                 yes_solutions = P_t
                 yes_domains = copy.copy(domains)
-                #yes_domains.pop(node.player)
+                yes_domains[node.player] = [node.bid]
                 #yes_players.remove(node.player)
                 node.yes = list(trees(yes_players, directions, yes_domains, yes_solutions))
                 if not node.yes:
@@ -146,7 +146,6 @@ def all_directions_games(players, bids, solutions):
 
 
 def possible_queries(players, directions, domains, solutions):
-
     def is_query_possible(node):
         def in_val(sol):
             value = 0
@@ -159,8 +158,6 @@ def possible_queries(players, directions, domains, solutions):
             for agent in sol:
                 if agent is player:
                     value += bid
-                elif agent in worst:
-                    value += domains[agent][0]
                 else:
                     value += domains[agent][-1]
             return value
@@ -169,7 +166,7 @@ def possible_queries(players, directions, domains, solutions):
             value = 0
             if dire:
                 for agent in sol:
-                    value += domains[agent][0] if agent in worst else domains[agent][-1]
+                    value += domains[agent][-1]
             else:
                 for agent in sol:
                     value += domains[agent][0]
@@ -186,7 +183,7 @@ def possible_queries(players, directions, domains, solutions):
 
     fl_inter = True
     for player in players:
-        if all(player in sol for sol in solutions) or len(domains[player])==1:
+        if all(player in sol for sol in solutions) or len(domains[player]) == 1:
             continue
         dire = directions[player]
         bid = domains[player][-1] if dire else domains[player][0]

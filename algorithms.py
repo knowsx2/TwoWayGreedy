@@ -1,3 +1,7 @@
+import copy
+from bisect import insort
+from game import *
+
 def twowaygreedy(agents, solutions):
     P = solutions
     I = set()
@@ -31,5 +35,137 @@ def search_last_nodes(node):
     return nodes + search_last_nodes(node.no) + search_last_nodes(node.yes)
 
 
-def euch_search(tree):
+def is_ancestor(node, ancestor):
+    if node.parent is None:
+        return False
+    if node.parent == ancestor:
+        return true
+    return is_anchestor(node.parent, ancestor)
+
+
+def same_player_ancestor(node, domains):
+    root = node
+    stack = [root]
+    while root.parent is not None:
+        root = root.parent
+        stack.append(root)
+    while stack[-1].player != node.player:
+        edon = stack.pop()
+        domains[edon.player].remove(edon.bid)
+    agents = []
+    for agent, domain in domains.items():
+        if not domain:
+            domains.pop(agent)
+        else:
+            agents += [agent]
+    return stack[-1], domains, agents
+
+
+def euch_search(tree, game):
     nodes = search_last_nodes(tree)
+    anchestors = [same_player_ancestor(node, game.domains) for node in nodes]
+    for (node, domains, agents) in anchestors:
+        game.directions[node.player] = 1 - game.directions[node.player]
+        while not check_solutioned_tree(tree):
+            there_is_another = fill_tree(node, game.directions, domains, agents)
+            if not there_is_another:
+                return None
+    return tree
+
+
+def fill_tree(tree, directions, domains, players):
+    def check_solutions(domains, solutions):
+        if len(solutions) <= 1:
+            return solutions
+        _players = copy.copy(players)
+        for player in players:
+            if any(player not in sol for sol in solutions):
+                _players.append(player)
+        maximum = [sum(max(domains[agent]) for agent in sol if agent in _players) for sol in solutions]
+        i = 0
+        for sol in solutions:
+            summ = 0
+            for agent in sol:
+                summ += min(domains[agent]) if agent in _players else 0
+            if all(summ >= boh for boh in maximum[:i] + maximum[i + 1:]):
+                return [sol]
+            i += 1
+        return solutions
+
+    def filter_solutions(domains, solutions):
+        if len(solutions) <= 1:
+            return solutions, None
+        _players = copy.copy(players)
+        for player in players:
+            if any(player not in sol for sol in solutions):
+                _players.append(player)
+        minimum = [sum(min(domains[agent]) for agent in sol if agent in _players) for sol in solutions]
+        i = 0
+        for sol in solutions:
+            summ = 0
+            for agent in sol:
+                summ += max(domains[agent]) if agent in _players else 0
+            if any(summ <= boh for boh in minimum[:i] + minimum[i + 1:]):
+                solutions.remove(sol)
+                minimum = minimum[:i] + minimum[i + 1:]
+            i += 1
+        agents = []
+        for sol in solutions:
+            for agent in sol:
+                if agent not in agents:
+                    agents.append(agent)
+        return solutions, agents
+
+    solutions, surv_agents = filter_solutions(domains, tree.solutions)
+    solutions = check_solutions(domains, solutions)
+    if len(solutions) <= 1:
+        tree.change(Node(solutions))
+        yield True
+    else:
+        if surv_agents is not None:
+            for player in players:
+                if player not in surv_agents:
+                    players.remove(player)
+                    domains.pop(player)
+
+        for node in possible_queries(players, directions, domains, tree.solutions):
+            no_domains = copy.copy(domains)
+            no_players = copy.copy(players)
+            no_solutions = copy.copy(tree.solutions)
+            no_directions = copy.copy(directions)
+            if node.direction is not directions[node.player]:
+                # interleaving
+                no_directions[node.player] = node.direction
+                no_domains[node.player] = [domains[node.player][-1]] if directions[node.player] \
+                    else [domains[node.player][0]]
+            else:
+                no_domains[node.player] = no_domains[node.player][:-1] if directions[node.player] else \
+                    no_domains[node.player][1:]  # reduce sub domain
+            if not no_domains[node.player]:
+                no_players.remove(node.player)
+                no_domains.pop(node.player)
+                no_solutions = [solution for solution in tree.solutions if node.player not in solution]
+            # elif len(no_domains[node.player]) == 1:
+            #   no_solutions = check_solutions(no_domains, solutions)
+            # no_players.remove(node.player)
+
+            node.no = Node(no_solutions)
+            fill_tree(node.no, no_directions, no_domains, no_players)
+
+            # "yes" side of node
+            P_t = [solution for solution in tree.solutions if node.player in solution] if node.direction else \
+                [solution for solution in tree.solutions if node.player not in solution]
+            if not P_t:
+                # there aren't suitable solutions
+                pass
+            else:
+                yes_players = copy.copy(players)
+                yes_solutions = P_t
+                yes_domains = copy.copy(domains)
+                yes_domains[node.player] = [node.bid]
+                # yes_players.remove(node.player)
+                node.yes = Node(yes_solutions)
+                fill_tree(node.yes, directions, yes_domains, yes_players)
+            tree.change(node)
+            yield True
+        yield False

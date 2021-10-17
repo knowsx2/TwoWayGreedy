@@ -38,6 +38,15 @@ class Node:
     def set_no(self, node):
         self.no = node
 
+    def change(self, node):
+        self.player = node.player
+        self.direction = node.direction
+        self.bid = node.bid
+        self.solutions = node.solutions
+        self.yes = node.yes
+        self.no = node.no
+        self.parent = node.parent
+
     def __str__(self):
         strdir = "in" if self.direction == 1 else "out"
         string = "ply: " + str(self.player) + " | " + "dir: " + strdir + " | " + "bid: " + str(self.bid) \

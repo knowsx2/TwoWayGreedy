@@ -23,18 +23,19 @@ def main():
     a1 = Agent("a1", bids, bids[0])
     a2 = Agent("a2", bids, bids[1])
     a3 = Agent("a3", bids, bids[2])
-    a4 = Agent("a4", bids, bids[0])
-    players = [a1, a2, a3, a4]
+    #a4 = Agent("a4", bids, bids[0])
+    players = [a1, a2, a3]
     # solutions = [[a1, a2, a3], [a2, a3, a4], [a1, a3, a4]]
-    solutions = [[a1, a2,  a4], [a2, a3]]
+    solutions = [[a1], [a2, a3]]
     app = App(0)
-
-    #for game in all_directions_games(players, bids, solutions):
-    game = Game(players, (1, 1, 1, 1), bids, solutions)
-    for trees in game.compute_all_trees():
-        for tree in list(elaborate_trees(trees)):
-            app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
-            print_node_on_frame(tree, app.frame[-1])
+    '''
+    for game in all_directions_games(players, bids, solutions):
+    #game = Game(players, (1, 1, 1, 1), bids, solutions)
+        for trees in game.compute_all_trees():
+    #trees = game.compute_all_trees()[0]
+            for tree in list(elaborate_trees(trees)):
+                app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
+                print_node_on_frame(tree, app.frame[-1])
     app.MainLoop()
     
     '''
@@ -43,11 +44,12 @@ def main():
     tree = list(elaborate_trees(list(game.compute_all_trees())[-1]))[-1]
     app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
     print_node_on_frame(tree, app.frame[-1])
-
-    print(search_last_nodes(tree)[0])
+    new_tree = euch_search(tree, game)
+    app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
+    print_node_on_frame(new_tree, app.frame[-1])
 
     app.MainLoop()
-    '''
+
     return
 
 
