@@ -72,7 +72,7 @@ def euch_search(tree, game):
                 return None
     return tree
 
-
+#ciao
 def fill_tree(tree, directions, domains, players):
     def check_solutions(domains, solutions):
         if len(solutions) <= 1:
