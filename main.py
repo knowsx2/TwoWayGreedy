@@ -40,7 +40,7 @@ def main():
     
     '''
     # testing search of incomplete nodes:
-    game = Game(players, (0, 1, 0), bids, solutions)
+    game = Game(players, (1, 1, 1), bids, solutions)
     tree = list(elaborate_trees(list(game.compute_all_trees())[-1]))[-1]
     app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
     print_node_on_frame(tree, app.frame[-1])
