@@ -19,29 +19,33 @@ def run_app(root):
 
 
 def main():
-    bids = [8, 17, 36]
+    bids = [3.1, 4, 5]
     a1 = Agent("a1", bids, bids[0])
     a2 = Agent("a2", bids, bids[1])
     a3 = Agent("a3", bids, bids[2])
+    a4 = Agent("a4", bids, bids[2])
+    a5 = Agent("a5", bids, bids[2])
+
     #a4 = Agent("a4", bids, bids[0])
-    players = [a1, a2, a3]
+    players = [a1, a2, a3, a4, a5]
     # solutions = [[a1, a2, a3], [a2, a3, a4], [a1, a3, a4]]
-    solutions = [[a1], [a2, a3]]
+    solutions = [[a2, a3], [a1, a4, a5]]
     app = App(0)
     '''
-    for game in all_directions_games(players, bids, solutions):
-    #game = Game(players, (1, 1, 1, 1), bids, solutions)
-        for trees in game.compute_all_trees():
-    #trees = game.compute_all_trees()[0]
-            for tree in list(elaborate_trees(trees)):
-                app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
-                print_node_on_frame(tree, app.frame[-1])
+    #for game in all_directions_games(players, bids, solutions):
+    game = Game(players, (1, 0, 0, 1, 1), bids, solutions)
+    #for trees in game.compute_all_trees():
+    trees = game.compute_all_trees()[0]
+    tree = list(elaborate_trees(trees))[0]
+    #for tree in list(elaborate_trees(trees)):
+    app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
+    print_node_on_frame(tree, app.frame[-1])
     app.MainLoop()
     
     '''
     # testing search of incomplete nodes:
-    game = Game(players, (1, 1, 1), bids, solutions)
-    tree = list(elaborate_trees(list(game.compute_all_trees())[-1]))[-1]
+    game = Game(players, (1, 0, 0, 1, 1), bids, solutions)
+    tree = Node(solutions, player=game.players[0], direction=1, bid=bids[0])
     app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
     print_node_on_frame(tree, app.frame[-1])
     new_tree = euch_search(tree, game)
