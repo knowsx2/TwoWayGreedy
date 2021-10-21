@@ -150,7 +150,12 @@ def possible_queries(players, directions, domains, solutions):
         def in_val(sol):
             value = 0
             for agent in sol:
-                value += bid if agent is player else domains[agent][0]
+                if agent is player:
+                    value += bid
+                elif agent in considered_agents:
+                    value += domains[agent][-1]
+                else:
+                    value += domains[agent][0]
             return value
 
         def out_val(sol):
@@ -158,6 +163,8 @@ def possible_queries(players, directions, domains, solutions):
             for agent in sol:
                 if agent is player:
                     value += bid
+                elif agent in considered_agents:
+                    value += domains[agent][0]
                 else:
                     value += domains[agent][-1]
             return value
@@ -172,9 +179,13 @@ def possible_queries(players, directions, domains, solutions):
                     value += domains[agent][0]
             return value
 
+        considered_agents = []
+        for sol in node.solutions:
+            if node.player not in sol:
+                considered_agents += [agent for agent in sol if agent not in considered_agents]
         if node.direction:
-            worst = min([solution for solution in node.solutions if node.player in solution], key=in_val)
             best = max([solution for solution in node.solutions if node.player not in solution], key=a_sum)
+            worst = min([solution for solution in node.solutions if node.player in solution], key=in_val)
             return True if in_val(worst) >= a_sum(best) else False
         else:
             worst = min([solution for solution in node.solutions if node.player not in solution], key=a_sum)
