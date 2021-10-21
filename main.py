@@ -19,7 +19,7 @@ def run_app(root):
 
 
 def main():
-    bids = [3.1, 4, 5]
+    bids = [3, 4, 5]
     a1 = Agent("a1", bids, bids[0])
     a2 = Agent("a2", bids, bids[1])
     a3 = Agent("a3", bids, bids[2])
@@ -45,10 +45,12 @@ def main():
     '''
     # testing search of incomplete nodes:
     game = Game(players, (1, 0, 0, 1, 1), bids, solutions)
-    tree = Node(solutions, player=game.players[0], direction=1, bid=bids[0])
+    tree = Node(solutions, player=game.players[0], direction=1, bid=bids[-1])
     app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
     print_node_on_frame(tree, app.frame[-1])
     new_tree = euch_search(tree, game)
+    if new_tree is None:
+        print("non è stata trovata una soluzione")
     app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
     print_node_on_frame(new_tree, app.frame[-1])
 

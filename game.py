@@ -175,11 +175,11 @@ def possible_queries(players, directions, domains, solutions):
         if node.direction:
             worst = min([solution for solution in node.solutions if node.player in solution], key=in_val)
             best = max([solution for solution in node.solutions if node.player not in solution], key=a_sum)
-            return True if in_val(worst) > a_sum(best) else False
+            return True if in_val(worst) >= a_sum(best) else False
         else:
             worst = min([solution for solution in node.solutions if node.player not in solution], key=a_sum)
             best = max([solution for solution in node.solutions if node.player in solution], key=out_val)
-            return True if a_sum(worst) > out_val(best) else False
+            return True if a_sum(worst) >= out_val(best) else False
 
     fl_inter = True
     for player in players:
