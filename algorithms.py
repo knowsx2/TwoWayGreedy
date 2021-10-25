@@ -36,7 +36,7 @@ def search_last_nodes(node):
     return nodes + search_last_nodes(node.no) + search_last_nodes(node.yes)
 
 
-def is_ancestor(node, ancestor):
+def is_anchestor(node, ancestor):
     if node.parent is None:
         return False
     if node.parent == ancestor:
@@ -69,10 +69,15 @@ def euch_search(tree, game):
             if list(direction) not in forbidden:
                 return {players[i]: direction[i] for i in range(len(players))}
         return None
+
     tested_directions = [[value for (_, value) in game.directions.items()]]
     while not check_solutioned_tree(tree):
         nodes = search_last_nodes(tree)
-        anchestors = [same_player_ancestor(node, game.domains) for node in nodes]
+        anchestors = []
+        for node in nodes:
+            anch = same_player_ancestor(node, game.domains)
+            anchestors += [anch] if anch not in anchestors else []
+        # anchestors = [same_player_ancestor(node, game.domains) for node in nodes]
         for (node, domains, agents) in anchestors:
             game.directions[node.player] = 1 - game.directions[node.player]
             if [value for (_, value) in game.directions.items()] in tested_directions:
@@ -82,13 +87,16 @@ def euch_search(tree, game):
                 else:
                     game.directions = new_directions
             new = next(possible_queries(agents, game.directions, domains, node.solutions), None)
-            if new is None and node.parent is not None:
-                node.parent.no = node.parent.yes = None
-                continue
-            if node.parent is None:
-                tested_directions += [[value for (_, value) in game.directions.items()]]
             if new is not None:
                 node.change(fill_tree(new, game.directions, domains, agents))
+                continue
+
+            if node.parent is not None:
+                node.parent.no = node.parent.yes = None
+                continue
+            else:
+                tested_directions += [[value for (_, value) in game.directions.items()]]
+
     return tree
 
 
@@ -165,7 +173,7 @@ def fill_tree(node, directions, domains, players):
                 if player not in surv_agents:
                     no_players.remove(player)
                     no_domains.pop(player)
-        node.no = next(possible_queries(no_players, no_directions, no_domains, no_solutions),None)
+        node.no = next(possible_queries(no_players, no_directions, no_domains, no_solutions), None)
         if node.no is not None:
             node.no.parent = node
             fill_tree(node.no, no_directions, no_domains, no_players)
