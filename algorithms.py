@@ -69,6 +69,7 @@ def euch_search(tree, game):
             if list(direction) not in forbidden:
                 return {players[i]: direction[i] for i in range(len(players))}
         return None
+    changes = 0
     tested_directions = [[value for (_, value) in game.directions.items()]]
     while not check_solutioned_tree(tree):
         nodes = search_last_nodes(tree)
@@ -80,7 +81,12 @@ def euch_search(tree, game):
                 if new_directions is None:
                     return None
                 else:
+                    for agent in game.directions.keys():
+                        if game.directions[agent] != new_directions[agent]:
+                            changes += 1
                     game.directions = new_directions
+            else:
+                changes += 1
             new = next(possible_queries(agents, game.directions, domains, node.solutions), None)
             if new is None and node.parent is not None:
                 node.parent.no = node.parent.yes = None
@@ -89,7 +95,7 @@ def euch_search(tree, game):
                 tested_directions += [[value for (_, value) in game.directions.items()]]
             if new is not None:
                 node.change(fill_tree(new, game.directions, domains, agents))
-    return tree
+    return tree, changes
 
 
 # ciao

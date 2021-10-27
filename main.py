@@ -47,9 +47,11 @@ def main():
     tree = Node(solutions, player=game.players[0], direction=1, bid=bids[-1])
     app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
     print_node_on_frame(tree, app.frame[-1])
-    new_tree = euch_search(tree, game)
+    new_tree, changes = euch_search(tree, game)
     if new_tree is None:
         print("non è stata trovata una soluzione")
+    else:
+        print("sono stati effettuati " + str(changes) + " cambi di direzione")
     app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
     print_node_on_frame(new_tree, app.frame[-1])
 
