@@ -68,16 +68,16 @@ def same_player_ancestor(node, domains):
 def count_appears(node):
     if node.player is None:
         return Counter()
-    occurrences = Counter([node.player])
+    occurrs = Counter([node.player])
     no_occurs = Counter()
     yes_occurs = Counter()
     if node.no is None and node.yes is None:
-        return occurrences
+        return occurrs
     if node.no is not None:
         no_occurs = count_appears(node.no)
     if node.yes is not None:
         yes_occurs = count_appears(node.yes)
-    return occurrences + no_occurs + yes_occurs
+    return occurrs + no_occurs + yes_occurs
 
 
 def first_to_appears_order(node, players):
@@ -131,6 +131,7 @@ def euch_search(tree, game):
     tested_directions = [[value for (_, value) in game.directions.items()]]
     while not check_solutioned_tree(tree):
         occurrences = count_appears(tree)
+        occurrences.update({x: 0 for x in game.players if x not in occurrences.keys()})
         hd = heapdict.heapdict(occurrences)
         # hd is a priority queue ordered by occurrences
         ties = [hd.popitem()]  # store the items that appears equal times
@@ -141,6 +142,9 @@ def euch_search(tree, game):
             if agent in ties[:][0]:
                 anchestors = player_first_nodes(tree, agent)
                 break
+        if not anchestors:
+            tree.player = ties[0][0]
+            anchestors.append(tree)
         for node in anchestors:
             agents = []
             for agent, domain in node.domains.items():
@@ -155,7 +159,7 @@ def euch_search(tree, game):
                     return None
                 else:
                     for agent in game.directions.keys():
-                        if game.directions[agent] != new_directions[agents]:
+                        if game.directions[agent] != new_directions[agent]:
                             changes += 1
                     game.directions = new_directions
             else:

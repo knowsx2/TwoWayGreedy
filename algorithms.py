@@ -82,7 +82,7 @@ def euch_search(tree, game):
                     return None
                 else:
                     for agent in game.directions.keys():
-                        if game.directions[agent] != new_directions[agents]:
+                        if game.directions[agent] != new_directions[agent]:
                             changes += 1
                     game.directions = new_directions
             else:

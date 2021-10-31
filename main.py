@@ -6,7 +6,9 @@
 from game import *
 from agent import Agent
 from app import *
-from algorithms import *
+import algorithms as algo
+import algorithmsV2 as algov2
+import copy
 
 
 def run_app(root):
@@ -28,7 +30,7 @@ def main():
 
     players = [a1, a2, a3]
     # solutions = [[a1, a2, a3], [a2, a3, a4], [a1, a3, a4]]
-    solutions = [[a1, a2], [a1, a3], [a2, a3]]
+    solutions = [[a1], [a2, a3]]
     app = App(0)
     '''
     #for game in all_directions_games(players, bids, solutions):
@@ -43,11 +45,13 @@ def main():
     
     '''
     # testing search of incomplete nodes:
-    game = Game(players, (1, 1, 1), bids, solutions)
-    tree = Node(solutions, player=game.players[0], direction=1, bid=bids[-1], domains=game.domains)
+    game = Game(players, (0, 0, 0), bids, solutions)
+    tree = Node(solutions, player=game.players[0], direction=0, bid=bids[0], domains=game.domains)
+    tree = algov2.fill_tree(tree, game.directions, tree.domains, game.players)
     app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
     print_node_on_frame(tree, app.frame[-1])
-    new_tree, changes = euch_search(tree, game)
+    new_tree, changes = algo.euch_search(tree, game)
+    new_tree, changes = algov2.euch_search(tree, game)
     if new_tree is None:
         print("non è stata trovata una soluzione")
     else:
