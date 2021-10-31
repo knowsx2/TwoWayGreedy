@@ -6,8 +6,8 @@
 from game import *
 from agent import Agent
 from app import *
-from algorithms import *
-
+from algorithmsV2 import *
+import heapdict
 
 def run_app(root):
     app = App(0)
@@ -30,22 +30,26 @@ def main():
     # solutions = [[a1, a2, a3], [a2, a3, a4], [a1, a3, a4]]
     solutions = [[a1, a2], [a1, a3], [a2, a3]]
     app = App(0)
+
     '''
-    #for game in all_directions_games(players, bids, solutions):
-    game = Game(players, (1, 0, 0, 1, 1), bids, solutions)
-    #for trees in game.compute_all_trees():
+    # for game in all_directions_games(players, bids, solutions):
+    game = Game(players, (1, 1, 1), bids, solutions)
+    # for trees in game.compute_all_trees():
     trees = game.compute_all_trees()[0]
     tree = list(elaborate_trees(trees))[0]
-    #for tree in list(elaborate_trees(trees)):
+    # for tree in list(elaborate_trees(trees)):
     app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
     print_node_on_frame(tree, app.frame[-1])
+
+
+
     app.MainLoop()
-    
     '''
     # testing search of incomplete nodes:
     game = Game(players, (1, 1, 1), bids, solutions)
     tree = Node(solutions, player=game.players[0], direction=1, bid=bids[-1], domains=game.domains)
     app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
+    tree = fill_tree(tree, game.directions, tree.domains, game.players)
     print_node_on_frame(tree, app.frame[-1])
     new_tree, changes = euch_search(tree, game)
     if new_tree is None:

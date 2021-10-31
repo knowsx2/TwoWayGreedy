@@ -1,12 +1,14 @@
 class Node:
-    def __init__(self, solutions, player=None, direction=None, bid=None):
+    def __init__(self, solutions, player=None, direction=None, bid=None, domains=None):
         self.player = player
         self.direction = direction
         self.bid = bid
         self.solutions = solutions
+        self.domains = domains
         self.yes = None
         self.no = None
         self.parent = None
+
 
     def get_player(self):
         return self.player

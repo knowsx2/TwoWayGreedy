@@ -198,7 +198,7 @@ def possible_queries(players, directions, domains, solutions):
             continue
         dire = directions[player]
         bid = domains[player][-1] if dire else domains[player][0]
-        node = Node(solutions, player, dire, bid)
+        node = Node(solutions, player, dire, bid, domains)
         if is_query_possible(node):
             fl_inter = False
             yield node
@@ -210,7 +210,7 @@ def possible_queries(players, directions, domains, solutions):
             if len(domains[player]) >= 2:
                 dire = 1 - directions[player]
                 bid = domains[player][-2] if directions[player] else domains[player][1]
-                node = Node(solutions, player, dire, bid)
+                node = Node(solutions, player, dire, bid, domains)
                 if is_query_possible(node):
                     yield node
 
