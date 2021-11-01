@@ -3,61 +3,7 @@ from bisect import insort
 from game import *
 import heapdict
 from collections import Counter
-
-
-def count_appears(node):
-    if node.player is None:
-        return Counter()
-    occurrs = Counter([node.player])
-    no_occurs = Counter()
-    yes_occurs = Counter()
-    if node.no is None and node.yes is None:
-        return occurrs
-    if node.no is not None:
-        no_occurs = count_appears(node.no)
-    if node.yes is not None:
-        yes_occurs = count_appears(node.yes)
-    return occurrs + no_occurs + yes_occurs
-
-
-def first_to_appears_order(node, players):
-
-    # Base Case
-    if node is None:
-        return
-
-    # Create an empty queue
-    # for level order traversal
-    order = []
-    queue = [node]
-
-    # Enqueue Root and initialize height
-
-    while len(queue) > 0 or len(order) == len(players):
-
-        # Print front of queue and
-        # remove it from queue
-        if queue[0].player is not None and queue[0].player not in order:
-            order.append(node.player)
-        # print(queue[0].data)
-        node = queue.pop(0)
-
-        # Enqueue left child
-        if node.no is not None:
-            queue.append(node.no)
-
-        # Enqueue right child
-        if node.yes is not None:
-            queue.append(node.yes)
-    return order
-
-
-def player_first_nodes(node, player):
-    if node is None:
-        return
-    if node.player == player:
-        return [node]
-    return player_first_nodes(node.no, player) + player_first_nodes(node.yes, player)
+from algorithmsV2 import *
 
 
 def euch_search(tree, game):
@@ -84,7 +30,7 @@ def euch_search(tree, game):
         #     ties += [hd.popitem()]
         anchestors = []
         agent = first_to_appears_order(tree, game.players)[-1]
-            # if agent in ties[:][0]:
+        # if agent in ties[:][0]:
         anchestors = player_first_nodes(tree, agent)
 
         if not anchestors:
@@ -119,103 +65,3 @@ def euch_search(tree, game):
             if new is not None:
                 node.change(fill_tree(new, game.directions, node.domains, agents))
     return tree, changes
-
-
-# ciao
-def fill_tree(node, directions, domains, players):
-    def check_solutions(domains, solutions):
-        if len(solutions) <= 1:
-            return solutions
-        _players = []
-        for player in players:
-            if any(player not in sol for sol in solutions):
-                _players.append(player)
-        maximum = [sum(max(domains[agent]) for agent in sol if agent in _players) for sol in solutions]
-        i = 0
-        for sol in solutions:
-            summ = 0
-            for agent in sol:
-                summ += min(domains[agent]) if agent in _players else 0
-            if all(summ >= boh for boh in maximum[:i] + maximum[i + 1:]):
-                return [sol]
-            i += 1
-        return solutions
-
-    def filter_solutions(domains, solutions):
-        if len(solutions) <= 1:
-            return solutions, None
-        _players = copy.copy(players)
-        for player in players:
-            if any(player not in sol for sol in solutions):
-                _players.append(player)
-        minimum = [sum(min(domains[agent]) for agent in sol if agent in _players) for sol in solutions]
-        i = 0
-        for sol in solutions:
-            summ = 0
-            for agent in sol:
-                summ += max(domains[agent]) if agent in _players else 0
-            if any(summ <= boh for boh in minimum[:i] + minimum[i + 1:]):
-                solutions.remove(sol)
-                minimum = minimum[:i] + minimum[i + 1:]
-            i += 1
-        agents = []
-        for sol in solutions:
-            for agent in sol:
-                if agent not in agents:
-                    agents.append(agent)
-        return solutions, agents
-
-    no_domains = copy.copy(domains)
-    no_players = copy.copy(players)
-    no_solutions = copy.copy(node.solutions)
-    no_directions = copy.copy(directions)
-    if node.direction is not directions[node.player]:
-        # interleaving
-        no_directions[node.player] = node.direction
-        no_domains[node.player] = [domains[node.player][-1]] if directions[node.player] \
-            else [domains[node.player][0]]
-    else:
-        no_domains[node.player] = no_domains[node.player][:-1] if directions[node.player] else \
-            no_domains[node.player][1:]  # reduce sub domain
-    if not no_domains[node.player]:
-        no_players.remove(node.player)
-        no_domains.pop(node.player)
-        no_solutions = [solution for solution in node.solutions if node.player not in solution]
-    # elif len(no_domains[node.player]) == 1:
-    #   no_solutions = check_solutions(no_domains, solutions)
-    # no_players.remove(node.player)
-    no_solutions, surv_agents = filter_solutions(no_domains, no_solutions)
-    no_solutions = check_solutions(no_domains, no_solutions)
-    if len(no_solutions) <= 1:
-        node.no = Node(no_solutions)
-    else:
-        if surv_agents is not None:
-            for player in no_players:
-                if player not in surv_agents:
-                    no_players.remove(player)
-                    no_domains.pop(player)
-        node.no = next(possible_queries(no_players, no_directions, no_domains, no_solutions), None)
-        if node.no is not None:
-            node.no.parent = node
-            fill_tree(node.no, no_directions, no_domains, no_players)
-
-    # "yes" side of node
-    P_t = [solution for solution in node.solutions if node.player in solution] if node.direction else \
-        [solution for solution in node.solutions if node.player not in solution]
-    if not P_t:
-        # there aren't suitable solutions
-        pass
-    else:
-        yes_players = copy.copy(players)
-        yes_solutions = P_t
-        yes_domains = copy.copy(domains)
-        yes_domains[node.player] = [node.bid]
-        # yes_players.remove(node.player)
-        if len(yes_solutions) == 1:
-            node.yes = Node(yes_solutions)
-        else:
-            node.yes = next(possible_queries(yes_players, directions, yes_domains, yes_solutions), None)
-            if node.yes is not None:
-                node.yes.parent = node
-                fill_tree(node.yes, directions, yes_domains, yes_players)
-    return node
