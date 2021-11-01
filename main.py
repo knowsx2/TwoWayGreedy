@@ -54,9 +54,9 @@ def main():
     tree = algov2.fill_tree(tree, game.directions, tree.domains, game.players)
     app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
     print_node_on_frame(tree, app.frame[-1])
-    new_tree, changes = algo.euch_search(tree, game)
+    # new_tree, changes = algo.euch_search(tree, game)
     # new_tree, changes = algov2.euch_search(tree, game)
-    # new_tree, changes = algov2_1.euch_search(tree, game)
+    new_tree, changes = algov2_1.euch_search(tree, game)
     if new_tree is None:
         print("non è stata trovata una soluzione")
     else:

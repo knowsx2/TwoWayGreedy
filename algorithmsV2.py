@@ -1,9 +1,6 @@
-import copy
-from bisect import insort
-from game import *
-import heapdict
 from collections import Counter
 from algorithms import *
+
 
 # Cambia il nodo che ha cambiato meno e in caso di parità quello che ha effettuato il primo cambio per ultimo
 def count_appears(node):
@@ -22,7 +19,6 @@ def count_appears(node):
 
 
 def first_to_appears_order(node, players):
-
     # Base Case
     if node is None:
         return
