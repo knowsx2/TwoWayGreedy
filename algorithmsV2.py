@@ -5,66 +5,6 @@ import heapdict
 from collections import Counter
 
 
-def twowaygreedy(agents, solutions):
-    P = solutions
-    I = set()
-    A = agents
-    while len(P) > 1:
-        i_in = max(enumerate(A.difference(I)), key=lambda x: x[1].domain[-1])[1]  # ritorna l'agente col massimo dominio
-        i_out = min(enumerate(A.difference(I)), key=lambda x: x[1].domain[0])[1]  # ritorna l'agente col minimo dominio
-        i = i_in
-        if i == i_in and [solution for solution in P if i in P]:
-            P_in = [solution for solution in P if i in P]
-            P = P_in
-            A.remove(i)
-        elif i == i_out and [solution for solution in P if i not in P]:
-            P_out = [solution for solution in P if i not in P]
-            P = P_out
-            A.remove(i)
-        else:
-            I.add(i)
-    return P.pop()
-
-
-def search_last_nodes(node):
-    nodes = []
-    if node is None:
-        return nodes
-    if node.player is None:
-        return nodes
-    if node.no is None or node.yes is None:
-        nodes.append(node)
-        return nodes
-    return nodes + search_last_nodes(node.no) + search_last_nodes(node.yes)
-
-
-def is_ancestor(node, ancestor):
-    if node.parent is None:
-        return False
-    if node.parent == ancestor:
-        return True
-    return is_anchestor(node.parent, ancestor)
-
-
-def same_player_ancestor(node, domains):
-    root = node
-    stack = [root]
-    new_domains = {key: copy.deepcopy(value) for (key, value) in domains.items()}
-    while root.parent is not None:
-        root = root.parent
-        stack.append(root)
-    while stack[-1].player != node.player:
-        edon = stack.pop()
-        new_domains[edon.player].remove(edon.bid)
-    agents = []
-    for agent, domain in new_domains.items():
-        if not domain:
-            new_domains.pop(agent)
-        else:
-            agents += [agent]
-    return stack[-1], new_domains, agents
-
-
 def count_appears(node):
     if node.player is None:
         return Counter()

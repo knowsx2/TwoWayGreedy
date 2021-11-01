@@ -45,8 +45,11 @@ def main():
     
     '''
     # testing search of incomplete nodes:
-    game = Game(players, (0, 1, 0), bids, solutions)
-    tree = Node(solutions, player=game.players[0], direction=0, bid=bids[0], domains=game.domains)
+    game = Game(players, (1, 1, 1), bids, solutions)
+    tree = next(possible_queries(players, game.directions, game.domains, solutions), None)
+    if tree is None:
+        print("non posso generare nessun nodo iniziale con questa configurazione")
+        return
     tree = algov2.fill_tree(tree, game.directions, tree.domains, game.players)
     app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
     print_node_on_frame(tree, app.frame[-1])
