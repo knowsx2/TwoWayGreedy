@@ -4,7 +4,7 @@ from game import *
 import heapdict
 from collections import Counter
 
-# Cambia il nodo che ha cambiato meno e in caso di parità quello che ha effettuato il primo cambio per ultimo
+
 def count_appears(node):
     if node.player is None:
         return Counter()
@@ -75,18 +75,18 @@ def euch_search(tree, game):
     changes = 0
     tested_directions = [[value for (_, value) in game.directions.items()]]
     while not check_solutioned_tree(tree):
-        occurrences = count_appears(tree)
-        occurrences.update({x: 0 for x in game.players if x not in occurrences.keys()})
-        hd = heapdict.heapdict(occurrences)
+        # occurrences = count_appears(tree)
+        # occurrences.update({x: 0 for x in game.players if x not in occurrences.keys()})
+        # hd = heapdict.heapdict(occurrences)
         # hd is a priority queue ordered by occurrences
-        ties = [hd.popitem()]  # store the items that appears equal times
-        while len(hd) > 0 and hd.peekitem()[1] == ties[-1][1]:
-            ties += [hd.popitem()]
+        # ties = [hd.popitem()]  # store the items that appears equal times
+        # while len(hd) > 0 and hd.peekitem()[1] == ties[-1][1]:
+        #     ties += [hd.popitem()]
         anchestors = []
-        for agent in first_to_appears_order(tree, game.players)[::-1]:
-            if agent in ties[:][0]:
-                anchestors = player_first_nodes(tree, agent)
-                break
+        agent = first_to_appears_order(tree, game.players)[-1]
+            # if agent in ties[:][0]:
+        anchestors = player_first_nodes(tree, agent)
+
         if not anchestors:
             tree.player = ties[0][0]
             anchestors.append(tree)
