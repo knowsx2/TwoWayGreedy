@@ -46,25 +46,44 @@ def main():
     
     '''
     # testing search of incomplete nodes:
-    game = Game(players, (1, 0, 1), bids, solutions)
-    tree = next(possible_queries(players, game.directions, game.domains, solutions), None)
+    game1 = Game(players, (1, 0, 1), bids, solutions)
+    game2 = Game(players, (1, 0, 1), bids, solutions)
+    game3 = Game(players, (1, 0, 1), bids, solutions)
+    tree = next(possible_queries(players, game1.directions, game1.domains, solutions), None)
     if tree is None:
         print("non posso generare nessun nodo iniziale con questa configurazione")
         return
-    tree = algov2.fill_tree(tree, game.directions, tree.domains, game.players)
-    app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
-    print_node_on_frame(tree, app.frame[-1])
-    # new_tree, changes = algo.euch_search(tree, game)
-    # new_tree, changes = algov2.euch_search(tree, game)
-    new_tree, changes = algov2_1.euch_search(tree, game)
-    if new_tree is None:
-        print("non è stata trovata una soluzione")
-    else:
-        print("sono stati effettuati " + str(changes) + " cambi di direzione")
-    app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
-    print_node_on_frame(new_tree, app.frame[-1])
+    node = copy.copy(tree)
 
-    app.MainLoop()
+    tree = algov2.fill_tree(tree, game1.directions, tree.domains, game1.players)
+    #app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
+    #print_node_on_frame(tree, app.frame[-1])
+
+    new_tree, changes = algo.euch_search(tree, game1)
+    if new_tree is None:
+        print("VERSION 1: non è stata trovata una soluzione")
+    else:
+        print("VERSION 1: sono stati effettuati " + str(changes) + " cambi di direzione")
+
+    tree = copy.copy(node)
+    tree = algov2.fill_tree(tree, game2.directions, tree.domains, game2.players)
+    new_tree, changes = algov2.euch_search(tree, game2)
+    if new_tree is None:
+        print("VERSION 2: non è stata trovata una soluzione")
+    else:
+        print("VERSION 2: sono stati effettuati " + str(changes) + " cambi di direzione")
+
+    tree = copy.copy(node)
+    tree = algov2.fill_tree(tree, game3.directions, tree.domains, game3.players)
+    new_tree, changes = algov2_1.euch_search(tree, game3)
+    if new_tree is None:
+        print("VERSION 3: non è stata trovata una soluzione")
+    else:
+        print("VERSION 3: sono stati effettuati " + str(changes) + " cambi di direzione")
+    #app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
+    #print_node_on_frame(new_tree, app.frame[-1])
+
+    #app.MainLoop()
 
     return
 
