@@ -30,12 +30,12 @@ def first_to_appears_order(node, players):
 
     # Enqueue Root and initialize height
 
-    while len(queue) > 0 or len(order) == len(players):
+    while len(queue) > 0 and len(order) < len(players):
 
         # Print front of queue and
         # remove it from queue
         if queue[0].player is not None and queue[0].player not in order:
-            order.append(node.player)
+            order.append(queue[0].player)
         # print(queue[0].data)
         node = queue.pop(0)
 
@@ -51,7 +51,7 @@ def first_to_appears_order(node, players):
 
 def player_first_nodes(node, player):
     if node is None:
-        return
+        return []
     if node.player == player:
         return [node]
     return player_first_nodes(node.no, player) + player_first_nodes(node.yes, player)
@@ -99,7 +99,7 @@ def euch_search(tree, game):
             if [value for (_, value) in game.directions.items()] in tested_directions:
                 new_directions = search_direction(game.players, tested_directions)
                 if new_directions is None:
-                    return None
+                    return None, changes
                 else:
                     for agent in game.directions.keys():
                         if last_directions[agent] != new_directions[agent]:

@@ -1,5 +1,4 @@
 import copy
-from bisect import insort
 from game import *
 import heapdict
 
@@ -60,7 +59,8 @@ def same_player_ancestor(node, domains):
         if not domain:
             new_domains.pop(agent)
         else:
-            agents += [agent]
+            if any(agent in sol for sol in stack[-1].solutions):
+                agents += [agent]
     return stack[-1], new_domains, agents
 
 
@@ -87,7 +87,7 @@ def euch_search(tree, game):
             if [value for (_, value) in game.directions.items()] in tested_directions:
                 new_directions = search_direction(game.players, tested_directions)
                 if new_directions is None:
-                    return None
+                    return None, changes
                 else:
                     for agent in game.directions.keys():
                         if last_directions[agent] != new_directions[agent]:
@@ -129,7 +129,7 @@ def fill_tree(node, directions, domains, players):
     def filter_solutions(domains, solutions):
         if len(solutions) <= 1:
             return solutions, None
-        _players = copy.copy(players)
+        _players = []
         for player in players:
             if any(player not in sol for sol in solutions):
                 _players.append(player)
@@ -196,9 +196,16 @@ def fill_tree(node, directions, domains, players):
         yes_domains = copy.copy(domains)
         yes_domains[node.player] = [node.bid]
         # yes_players.remove(node.player)
-        if len(yes_solutions) == 1:
+        yes_solutions, surv_agents = filter_solutions(yes_domains, yes_solutions)
+        yes_solutions = check_solutions(yes_domains, yes_solutions)
+        if len(yes_solutions) <= 1:
             node.yes = Node(yes_solutions)
         else:
+            if surv_agents is not None:
+                for player in yes_players:
+                    if player not in surv_agents:
+                        yes_players.remove(player)
+                        yes_domains.pop(player)
             node.yes = next(possible_queries(yes_players, directions, yes_domains, yes_solutions), None)
             if node.yes is not None:
                 node.yes.parent = node

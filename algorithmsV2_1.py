@@ -43,7 +43,7 @@ def euch_search(tree, game):
             if [value for (_, value) in game.directions.items()] in tested_directions:
                 new_directions = search_direction(game.players, tested_directions)
                 if new_directions is None:
-                    return None
+                    return None, changes
                 else:
                     for agent in game.directions.keys():
                         if last_directions[agent] != new_directions[agent]:
