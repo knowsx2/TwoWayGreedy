@@ -1,15 +1,13 @@
 from random import *
 from agent import Agent
-
+import itertools as it
 
 def remove_sublists(lists):
-    for list1 in lists:
-        for list2 in lists:
-            if list1 != list2:
-                if set(list1) <= set(list2):
-                    lists.remove(list1)
+    for list1, list2 in it.permutations(lists,2):
+        if set(list1) <= set(list2):
+            if list1 in lists:
+                lists.remove(list1)
     return
-
 
 def generate():
     n_domains = randrange(3) + 3
