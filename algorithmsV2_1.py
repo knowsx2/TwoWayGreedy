@@ -3,7 +3,7 @@ from algorithmsV2 import *
 
 def euch_search(tree, game):
     def search_direction(players, forbidden):
-        last = forbidden[-1]
+        last = [value for (_, value) in last_directions.items()]
         diffs = heapdict.heapdict()
         for direction in it.product([0, 1], repeat=len(players)):
             diffs[direction] = sum([abs(direction[i] - last[i]) for i in range(len(last))])
@@ -14,7 +14,7 @@ def euch_search(tree, game):
         return None
 
     changes = 0
-    tested_directions = []
+    tested_directions = [[value for (_, value) in game.directions.items()]]
     while not check_solutioned_tree(tree):
         last_directions = copy.copy(game.directions)
         new_directions = copy.copy(game.directions)
