@@ -10,9 +10,9 @@ def remove_sublists(lists):
     return
 
 def generate():
-    n_domains = randrange(3) + 3
-    n_players = randrange(3) + 3
-    n_solutions = randrange(5) + 2
+    n_domains = randrange(5) + 3
+    n_players = randrange(5) + 3
+    n_solutions = randrange(7) + 2
     domains = []
     players = []
     solutions = []

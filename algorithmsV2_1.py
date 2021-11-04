@@ -14,23 +14,29 @@ def euch_search(tree, game):
         return None
 
     changes = 0
-    tested_directions = [[value for (_, value) in game.directions.items()]]
+    tested_directions = []
     while not check_solutioned_tree(tree):
-        # occurrences = count_appears(tree)
-        # occurrences.update({x: 0 for x in game.players if x not in occurrences.keys()})
-        # hd = heapdict.heapdict(occurrences)
-        # hd is a priority queue ordered by occurrences
-        # ties = [hd.popitem()]  # store the items that appears equal times
-        # while len(hd) > 0 and hd.peekitem()[1] == ties[-1][1]:
-        #     ties += [hd.popitem()]
-        anchestors = []
+        last_directions = copy.copy(game.directions)
+        new_directions = copy.copy(game.directions)
+
         agent = first_to_appears_order(tree, game.players)[-1]
-        # if agent in ties[:][0]:
+        new_directions[agent] = 1 - new_directions[agent]
         anchestors = player_first_nodes(tree, agent)
 
-        if not anchestors:
-            tree.player = ties[0][0]
-            anchestors.append(tree)
+        if [value for (_, value) in new_directions.items()] in tested_directions:
+            new_directions = search_direction(game.players, tested_directions)
+            if new_directions is None:
+                return None, changes
+            else:
+                change_agents = [agent for agent in list(new_directions.keys()) if last_directions[agent] != new_directions[agent]]
+                anchestors = []
+                for player in change_agents:
+                    anchestors += player_first_nodes(tree, player)
+        for agent in new_directions.keys():
+            if last_directions[agent] != new_directions[agent]:
+                changes += 1
+        tested_directions += [[value for (_, value) in last_directions.items()]]
+        game.directions = new_directions
         for node in anchestors:
             agents = []
             for agent, domain in node.domains.items():
@@ -38,25 +44,11 @@ def euch_search(tree, game):
                     agents += [agent]
                 else:
                     node.domains.pop(agent)
-            last_directions = copy.copy(game.directions)
-            game.directions[node.player] = 1 - game.directions[node.player]
-            if [value for (_, value) in game.directions.items()] in tested_directions:
-                new_directions = search_direction(game.players, tested_directions)
-                if new_directions is None:
-                    return None, changes
-                else:
-                    for agent in game.directions.keys():
-                        if last_directions[agent] != new_directions[agent]:
-                            changes += 1
-                    game.directions = new_directions
-            else:
-                changes += 1
+
             new = next(possible_queries(agents, game.directions, node.domains, node.solutions), None)
             if new is None and node.parent is not None:
                 node.parent.no = node.parent.yes = None
                 continue
-            if node.parent is None:
-                tested_directions += [[value for (_, value) in game.directions.items()]]
             if new is not None:
                 node.change(fill_tree(new, game.directions, node.domains, agents))
     return tree, changes

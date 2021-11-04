@@ -46,10 +46,10 @@ def main():
     # solutions = [[a1], [a2, a3]]
 
 
-    #bids, players, directions, solutions = generate()
-    bids = [7, 48, 59, 71, 122]
-    players = [Agent("a0", bids, bids[1]), Agent("a1", bids, bids[1]), Agent("a2", bids, bids[1]),Agent("a3", bids, bids[1]), Agent("a4", bids, bids[1])]
-    directions, solutions = [0, 0, 1, 1, 1], [[players[0]], [players[1]], [players[2]], [players[3]], [players[4]]]
+    bids, players, directions, solutions = generate()
+    #bids = [90, 109, 112, 122, 124, 136]
+    #players = [Agent("a0", bids, bids[1]), Agent("a1", bids, bids[1]), Agent("a2", bids, bids[1]), Agent("a3", bids, bids[1])]
+    #directions, solutions = [0, 0, 1, 0], [[players[1], players[3], players[0]], [players[2]]]
 
 
     app = App(0)
@@ -91,8 +91,8 @@ def main():
 
     tree = algov2.fill_tree(tree, game1.directions, tree.domains, game1.players)
 
-    #app.add_frame(str(game1.directions).replace(": 0", ": out").replace(": 1", ": in"))
-    #print_node_on_frame(tree, app.frame[-1])
+    app.add_frame(str(game1.directions).replace(": 0", ": out").replace(": 1", ": in"))
+    print_node_on_frame(tree, app.frame[-1])
     #app.MainLoop()
 
     new_tree, changes = algo.euch_search(tree, game1)
