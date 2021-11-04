@@ -47,7 +47,7 @@ def trees(players, directions, domains, solutions):
     def check_solutions(domains, solutions):
         if len(solutions) <= 1:
             return solutions
-        _players = copy.copy(players)
+        _players = []
         for player in players:
             if any(player not in sol for sol in solutions):
                 _players.append(player)
@@ -65,7 +65,7 @@ def trees(players, directions, domains, solutions):
     def filter_solutions(domains, solutions):
         if len(solutions) <= 1:
             return solutions, None
-        _players = copy.copy(players)
+        _players = []
         for player in players:
             if any(player not in sol for sol in solutions):
                 _players.append(player)
@@ -114,9 +114,8 @@ def trees(players, directions, domains, solutions):
                 no_players.remove(node.player)
                 no_domains.pop(node.player)
                 no_solutions = [solution for solution in solutions if node.player not in solution]
-            #elif len(no_domains[node.player]) == 1:
-             #   no_solutions = check_solutions(no_domains, solutions)
-                # no_players.remove(node.player)
+            no_solutions, surv_agents = filter_solutions(no_domains, no_solutions)
+            no_solutions = check_solutions(no_domains, no_solutions)
 
             node.no = list(trees(no_players, no_directions, no_domains, no_solutions))
             if not node.no:
@@ -133,6 +132,8 @@ def trees(players, directions, domains, solutions):
                 yes_domains = copy.copy(domains)
                 yes_domains[node.player] = [node.bid]
                 #yes_players.remove(node.player)
+                yes_solutions, surv_agents = filter_solutions(yes_domains, yes_solutions)
+                yes_solutions = check_solutions(yes_domains, yes_solutions)
                 node.yes = list(trees(yes_players, directions, yes_domains, yes_solutions))
                 if not node.yes:
                     node.yes = [None]

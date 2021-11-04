@@ -13,6 +13,7 @@ import algorithmsV2_1 as algov2_1
 import copy
 import heapdict
 
+
 def search_direction(players, forbidden):
     last = forbidden[-1]
     diffs = heapdict.heapdict()
@@ -23,6 +24,7 @@ def search_direction(players, forbidden):
         if list(current) not in forbidden:
             return list(current)
     return None
+
 
 def run_app(root):
     app = App(0)
@@ -45,27 +47,29 @@ def main():
     # solutions = [[a1, a2, a3], [a2, a3, a4], [a1, a3, a4]]
     # solutions = [[a1], [a2, a3]]
 
+    #bids, players, directions, solutions = generate()
+    bids = [14, 32, 45, 86, 120, 126, 131]
+    players = [Agent("a0", bids, bids[1]), Agent("a1", bids, bids[1]), Agent("a2", bids, bids[1])]
+    directions, solutions = [0, 0, 1], [[players[0], players[1]], [players[0], players[2]]]
 
-    bids, players, directions, solutions = generate()
-    #bids = [90, 109, 112, 122, 124, 136]
-    #players = [Agent("a0", bids, bids[1]), Agent("a1", bids, bids[1]), Agent("a2", bids, bids[1]), Agent("a3", bids, bids[1])]
-    #directions, solutions = [0, 0, 1, 0], [[players[1], players[3], players[0]], [players[2]]]
-
-
+    print(bids, players, directions, solutions)
     app = App(0)
-    '''
+    red_flag = False
+    white_flag = False
     for game in all_directions_games(players, bids, solutions):
-        #game = Game(players, (1, 0, 0, 1, 1), bids, solutions)
         for trees in game.compute_all_trees():
-    #trees = game.compute_all_trees()[0]
-    #tree = list(elaborate_trees(trees))[0]
             for tree in list(elaborate_trees(trees)):
-                
-                app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
-                print_node_on_frame(tree, app.frame[-1])
-    app.MainLoop()
-    
-    '''
+                if not white_flag and check_solutioned_tree(tree):
+                    app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
+                    print_node_on_frame(tree, app.frame[-1])
+                    white_flag = True
+                if not red_flag and not check_solutioned_tree(tree):
+                    app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
+                    print_node_on_frame(tree, app.frame[-1])
+                    red_flag = True
+
+    #app.MainLoop()
+
     # testing search of incomplete nodes:
     temp_game = Game(players, directions, bids, solutions)
     tree = next(possible_queries(players, temp_game.directions, temp_game.domains, solutions), None)
@@ -91,9 +95,9 @@ def main():
 
     tree = algov2.fill_tree(tree, game1.directions, tree.domains, game1.players)
 
-    app.add_frame(str(game1.directions).replace(": 0", ": out").replace(": 1", ": in"))
-    print_node_on_frame(tree, app.frame[-1])
-    #app.MainLoop()
+    #app.add_frame(str(game1.directions).replace(": 0", ": out").replace(": 1", ": in"))
+    #print_node_on_frame(tree, app.frame[-1])
+    # app.MainLoop()
 
     new_tree, changes = algo.euch_search(tree, game1)
     if new_tree is None:
