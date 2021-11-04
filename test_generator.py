@@ -18,7 +18,7 @@ def generate():
     solutions = []
 
     for _ in range(n_domains):
-        domains.append(randrange(150))
+        domains.append(choice([i for i in range(1, 150) if i not in domains]))
     domains = sorted(domains)
 
     for i in range(n_players):
@@ -30,12 +30,12 @@ def generate():
             if randrange(n_players) < 1:
                 solution.append(player)
         solutions.append(solution)
-    for player in players:
-        if all(player not in solution for solution in solutions):
-            solutions[randrange(n_solutions)].append(player)
     for solution in solutions:
         if not solution:
             solution.append(players[randrange(n_players)])
     remove_sublists(solutions)
+    for player in players:
+        if all(player not in solution for solution in solutions):
+            solutions[randrange(len(solutions))].append(player)
     directions = [randrange(2) for _ in range(n_players)]
     return domains, players, directions, solutions
