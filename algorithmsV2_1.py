@@ -38,17 +38,10 @@ def euch_search(tree, game):
         tested_directions += [[value for (_, value) in last_directions.items()]]
         game.directions = new_directions
         for node in anchestors:
-            agents = []
-            for agent, domain in node.domains.items():
-                if domain:
-                    agents += [agent]
-                else:
-                    node.domains.pop(agent)
-
-            new = next(possible_queries(agents, game.directions, node.domains, node.solutions), None)
+            new = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions), None)
             if new is None and node.parent is not None:
                 node.parent.no = node.parent.yes = None
                 continue
             if new is not None:
-                node.change(fill_tree(new, game.directions, node.domains, agents))
+                node.change(fill_tree(new, game.directions, node.domains, list(node.domains.keys())))
     return tree, changes
