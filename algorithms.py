@@ -124,7 +124,8 @@ def euch_search(tree, game):
 
 # ciao
 def fill_tree(node, directions, domains, players):
-    def check_solutions(domains, solutions):
+    def check_solutions(domains, old_solutions):
+        solutions = copy.copy(old_solutions)
         if len(solutions) <= 1:
             return solutions
         _players = []
@@ -142,7 +143,8 @@ def fill_tree(node, directions, domains, players):
             i += 1
         return solutions
 
-    def filter_solutions(domains, solutions):
+    def filter_solutions(domains, old_solutions):
+        solutions = copy.copy(old_solutions)
         if len(solutions) <= 1:
             return solutions, None
         _players = []
@@ -166,6 +168,10 @@ def fill_tree(node, directions, domains, players):
                     agents.append(agent)
         return solutions, agents
 
+    solutions, surv_agents = filter_solutions(node.domains, node.solutions)
+    solutions = check_solutions(node.domains, solutions)
+    if len(solutions) <= 1:
+        return Node(solutions)
     no_domains = copy.copy(domains)
     no_players = copy.copy(players)
     no_solutions = copy.copy(node.solutions)

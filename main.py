@@ -47,13 +47,17 @@ def main():
     # solutions = [[a1, a2, a3], [a2, a3, a4], [a1, a3, a4]]
     # solutions = [[a1], [a2, a3]]
 
+    # ******* DA VERIFICARE ********
+    #[57, 63, 91, 103, 106, 131][a0, a1, a2, a3, a4][0, 1, 1, 0, 1][[a2, a3, a0, a4], [a1, a3]]
+    
     #bids, players, directions, solutions = generate()
-    bids = [14, 32, 45, 86, 120, 126, 131]
-    players = [Agent("a0", bids, bids[1]), Agent("a1", bids, bids[1]), Agent("a2", bids, bids[1])]
-    directions, solutions = [0, 0, 1], [[players[0], players[1]], [players[0], players[2]]]
+    bids = [57, 63, 91, 103, 106, 131]
+    players = [Agent("a0", bids, bids[1]), Agent("a1", bids, bids[1]), Agent("a2", bids, bids[1]), Agent("a3", bids, bids[1]), Agent("a4", bids, bids[1])]
+    directions, solutions = [0, 1, 1, 0, 1], [[players[3], players[1]], [players[0], players[2], players[3], players[4]]]
 
     print(bids, players, directions, solutions)
     app = App(0)
+
     red_flag = False
     white_flag = False
     for game in all_directions_games(players, bids, solutions):

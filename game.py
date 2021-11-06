@@ -44,7 +44,8 @@ def elaborate_trees(node):
 
 
 def trees(players, directions, domains, solutions):
-    def check_solutions(domains, solutions):
+    def check_solutions(domains, old_solutions):
+        solutions = copy.copy(old_solutions)
         if len(solutions) <= 1:
             return solutions
         _players = []
@@ -62,7 +63,8 @@ def trees(players, directions, domains, solutions):
             i += 1
         return solutions
 
-    def filter_solutions(domains, solutions):
+    def filter_solutions(domains, old_solutions):
+        solutions = copy.copy(old_solutions)
         if len(solutions) <= 1:
             return solutions, None
         _players = []
