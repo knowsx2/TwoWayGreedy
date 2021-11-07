@@ -51,9 +51,9 @@ def main():
 
     
     #bids, players, directions, solutions = generate()
-    bids = [9, 240, 327]
+    bids = [26, 49, 78]
     players = [Agent("a0", bids, bids[1]), Agent("a1", bids, bids[1]), Agent("a2", bids, bids[1]), Agent("a3", bids, bids[1])]
-    directions, solutions = [0, 0, 0, 0], [[players[3]], [players[0], players[2]], [players[0], players[1]]]
+    directions, solutions = [0, 0, 0, 0], [[players[1],players[3]], [players[0], players[2], players[3]]]
 
     print(bids, players, directions, solutions)
     app = App(0)
@@ -107,7 +107,7 @@ def main():
     if new_tree is None:
         print("VERSION 1: non è stata trovata una soluzione con " + str(changes) + " cambi di direzione")
     else:
-        print("VERSION 1: sono stati effettuati " + str(changes) + " cambi di direzione")
+        print("VERSION 1: sono stati effettuati " + str(changes) + " cambi di direzione: " + str(sum(changes.values())))
         app.add_frame("Algo1 " + str(game1.directions).replace(": 0", ": out").replace(": 1", ": in"))
         print_node_on_frame(new_tree, app.frame[-1])
 
@@ -117,7 +117,7 @@ def main():
     if new_tree is None:
         print("VERSION 2: non è stata trovata una soluzione con " + str(changes) + " cambi di direzione")
     else:
-        print("VERSION 2: sono stati effettuati " + str(changes) + " cambi di direzione")
+        print("VERSION 2: sono stati effettuati " + str(changes) + " cambi di direzione: " + str(sum(changes.values())))
         app.add_frame("Algo2 " + str(game2.directions).replace(": 0", ": out").replace(": 1", ": in"))
         print_node_on_frame(new_tree, app.frame[-1])
 
@@ -127,7 +127,7 @@ def main():
     if new_tree is None:
         print("VERSION 3: non è stata trovata una soluzione con " + str(changes) + " cambi di direzione")
     else:
-        print("VERSION 3: sono stati effettuati " + str(changes) + " cambi di direzione")
+        print("VERSION 3: sono stati effettuati " + str(changes) + " cambi di direzione: " + str(sum(changes.values())))
         app.add_frame("Algo3 " + str(game3.directions).replace(": 0", ": out").replace(": 1", ": in"))
         print_node_on_frame(new_tree, app.frame[-1])
 
