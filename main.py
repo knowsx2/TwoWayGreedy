@@ -51,13 +51,12 @@ def main():
 
     
     #bids, players, directions, solutions = generate()
-    bids = [26, 49, 78]
+    bids = [105, 159, 268]
     players = [Agent("a0", bids, bids[1]), Agent("a1", bids, bids[1]), Agent("a2", bids, bids[1]), Agent("a3", bids, bids[1])]
-    directions, solutions = [0, 0, 0, 0], [[players[1],players[3]], [players[0], players[2], players[3]]]
-
+    directions, solutions = [0, 0, 0, 0, 0], [[players[1], players[0], players[3]], [players[0], players[2]]]
     print(bids, players, directions, solutions)
     app = App(0)
-
+    '''
     red_flag = False
     white_flag = False
     for game in all_directions_games(players, bids, solutions):
@@ -71,7 +70,7 @@ def main():
                     app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
                     print_node_on_frame(tree, app.frame[-1])
                     red_flag = True
-
+    '''
     #app.MainLoop()
 
     # testing search of incomplete nodes:
@@ -105,7 +104,7 @@ def main():
 
     new_tree, changes = algo.euch_search(tree, game1)
     if new_tree is None:
-        print("VERSION 1: non è stata trovata una soluzione con " + str(changes) + " cambi di direzione")
+        print("VERSION 1: non è stata trovata una soluzione con " + str(sum(changes.values())) + " cambi di direzione")
     else:
         print("VERSION 1: sono stati effettuati " + str(changes) + " cambi di direzione: " + str(sum(changes.values())))
         app.add_frame("Algo1 " + str(game1.directions).replace(": 0", ": out").replace(": 1", ": in"))
@@ -115,7 +114,7 @@ def main():
     tree = algov2.fill_tree(tree, game2.directions, tree.domains, game2.players)
     new_tree, changes = algov2.euch_search(tree, game2)
     if new_tree is None:
-        print("VERSION 2: non è stata trovata una soluzione con " + str(changes) + " cambi di direzione")
+        print("VERSION 2: non è stata trovata una soluzione con " + str(sum(changes.values())) + " cambi di direzione")
     else:
         print("VERSION 2: sono stati effettuati " + str(changes) + " cambi di direzione: " + str(sum(changes.values())))
         app.add_frame("Algo2 " + str(game2.directions).replace(": 0", ": out").replace(": 1", ": in"))
@@ -125,7 +124,7 @@ def main():
     tree = algov2.fill_tree(tree, game3.directions, tree.domains, game3.players)
     new_tree, changes = algov2_1.euch_search(tree, game3)
     if new_tree is None:
-        print("VERSION 3: non è stata trovata una soluzione con " + str(changes) + " cambi di direzione")
+        print("VERSION 3: non è stata trovata una soluzione con " + str(sum(changes.values())) + " cambi di direzione")
     else:
         print("VERSION 3: sono stati effettuati " + str(changes) + " cambi di direzione: " + str(sum(changes.values())))
         app.add_frame("Algo3 " + str(game3.directions).replace(": 0", ": out").replace(": 1", ": in"))
