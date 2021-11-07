@@ -42,8 +42,34 @@ def elaborate_trees(node):
                 nodes.append(node_copy)
     return nodes
 
+def filter_solutions(domains, old_solutions):
+    players = list(domains.keys())
+    solutions = copy.copy(old_solutions)
+    if len(solutions) <= 1:
+        return solutions, None
+    _players = []
+    for player in players:
+        if any(player not in sol for sol in solutions):
+            _players.append(player)
+    minimum = [sum(min(domains[agent]) for agent in sol if agent in _players) for sol in solutions]
+    i = 0
+    for sol in solutions:
+        summ = 0
+        for agent in sol:
+            summ += max(domains[agent]) if agent in _players else 0
+        if any(summ <= boh for boh in minimum[:i] + minimum[i + 1:]):
+            solutions.remove(sol)
+            minimum = minimum[:i] + minimum[i + 1:]
+        i += 1
+    agents = []
+    for sol in solutions:
+        for agent in sol:
+            if agent not in agents:
+                agents.append(agent)
+    return solutions, agents
 
 def trees(players, directions, domains, solutions):
+    '''
     def check_solutions(domains, old_solutions):
         solutions = copy.copy(old_solutions)
         if len(solutions) <= 1:
@@ -62,43 +88,21 @@ def trees(players, directions, domains, solutions):
                 return [sol]
             i += 1
         return solutions
-
-    def filter_solutions(domains, old_solutions):
-        solutions = copy.copy(old_solutions)
-        if len(solutions) <= 1:
-            return solutions, None
-        _players = []
-        for player in players:
-            if any(player not in sol for sol in solutions):
-                _players.append(player)
-        minimum = [sum(min(domains[agent]) for agent in sol if agent in _players) for sol in solutions]
-        i = 0
-        for sol in solutions:
-            summ = 0
-            for agent in sol:
-                summ += max(domains[agent]) if agent in _players else 0
-            if any(summ <= boh for boh in minimum[:i] + minimum[i + 1:]):
-                solutions.remove(sol)
-                minimum = minimum[:i] + minimum[i + 1:]
-            i += 1
-        agents = []
-        for sol in solutions:
-            for agent in sol:
-                if agent not in agents:
-                    agents.append(agent)
-        return solutions, agents
+    '''
 
     solutions, surv_agents = filter_solutions(domains, solutions)
-    solutions = check_solutions(domains, solutions)
+    #solutions = check_solutions(domains, solutions)
     if len(solutions) <= 1:
         yield Node(solutions)
     else:
+        new_players = copy.copy(players)
+
         if surv_agents is not None:
-            for player in players:
+            for player in new_players:
                 if player not in surv_agents:
-                    players.remove(player)
-                    domains.pop(player)
-        for node in list(possible_queries(players, directions, domains, solutions)):
+                    new_players.remove(player)
+                    #domains.pop(player)
+        for node in list(possible_queries(new_players, directions, domains, solutions)):
             # "no" side of node
             no_domains = copy.copy(domains)
             no_players = copy.copy(players)
@@ -117,7 +121,7 @@ def trees(players, directions, domains, solutions):
                 no_domains.pop(node.player)
                 no_solutions = [solution for solution in solutions if node.player not in solution]
             no_solutions, surv_agents = filter_solutions(no_domains, no_solutions)
-            no_solutions = check_solutions(no_domains, no_solutions)
+            #no_solutions = check_solutions(no_domains, no_solutions)
 
             node.no = list(trees(no_players, no_directions, no_domains, no_solutions))
             if not node.no:
@@ -135,7 +139,7 @@ def trees(players, directions, domains, solutions):
                 yes_domains[node.player] = [node.bid]
                 #yes_players.remove(node.player)
                 yes_solutions, surv_agents = filter_solutions(yes_domains, yes_solutions)
-                yes_solutions = check_solutions(yes_domains, yes_solutions)
+                #yes_solutions = check_solutions(yes_domains, yes_solutions)
                 node.yes = list(trees(yes_players, directions, yes_domains, yes_solutions))
                 if not node.yes:
                     node.yes = [None]

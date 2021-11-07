@@ -124,6 +124,7 @@ def euch_search(tree, game):
 
 # ciao
 def fill_tree(node, directions, domains, players):
+    '''
     def check_solutions(domains, old_solutions):
         solutions = copy.copy(old_solutions)
         if len(solutions) <= 1:
@@ -142,34 +143,10 @@ def fill_tree(node, directions, domains, players):
                 return [sol]
             i += 1
         return solutions
-
-    def filter_solutions(domains, old_solutions):
-        solutions = copy.copy(old_solutions)
-        if len(solutions) <= 1:
-            return solutions, None
-        _players = []
-        for player in players:
-            if any(player not in sol for sol in solutions):
-                _players.append(player)
-        minimum = [sum(min(domains[agent]) for agent in sol if agent in _players) for sol in solutions]
-        i = 0
-        for sol in solutions:
-            summ = 0
-            for agent in sol:
-                summ += max(domains[agent]) if agent in _players else 0
-            if any(summ <= boh for boh in minimum[:i] + minimum[i + 1:]):
-                solutions.remove(sol)
-                minimum = minimum[:i] + minimum[i + 1:]
-            i += 1
-        agents = []
-        for sol in solutions:
-            for agent in sol:
-                if agent not in agents:
-                    agents.append(agent)
-        return solutions, agents
+    '''
 
     solutions, surv_agents = filter_solutions(node.domains, node.solutions)
-    solutions = check_solutions(node.domains, solutions)
+    #solutions = check_solutions(node.domains, solutions)
     if len(solutions) <= 1:
         return Node(solutions)
     no_domains = copy.copy(domains)
@@ -192,7 +169,7 @@ def fill_tree(node, directions, domains, players):
     #   no_solutions = check_solutions(no_domains, solutions)
     # no_players.remove(node.player)
     no_solutions, surv_agents = filter_solutions(no_domains, no_solutions)
-    no_solutions = check_solutions(no_domains, no_solutions)
+    #no_solutions = check_solutions(no_domains, no_solutions)
     if len(no_solutions) <= 1:
         node.no = Node(no_solutions)
     else:
@@ -219,7 +196,7 @@ def fill_tree(node, directions, domains, players):
         yes_domains[node.player] = [node.bid]
         # yes_players.remove(node.player)
         yes_solutions, surv_agents = filter_solutions(yes_domains, yes_solutions)
-        yes_solutions = check_solutions(yes_domains, yes_solutions)
+        #yes_solutions = check_solutions(yes_domains, yes_solutions)
         if len(yes_solutions) <= 1:
             node.yes = Node(yes_solutions)
         else:

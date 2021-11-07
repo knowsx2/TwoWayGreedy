@@ -18,7 +18,7 @@ def generate():
     solutions = []
 
     for _ in range(n_domains):
-        domains.append(choice([i for i in range(1, 150) if i not in domains]))
+        domains.append(choice([i for i in range(1, n_players*2*n_domains*2*n_solutions) if i not in domains]))
     domains = sorted(domains)
 
     for i in range(n_players):

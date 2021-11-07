@@ -65,7 +65,7 @@ def euch_search(tree, game):
     tested_directions = [[value for (_, value) in game.directions.items()]]
     while not check_solutioned_tree(tree):
         occurrences = count_appears(tree)
-        occurrences.update({x: 0 for x in game.players if x not in occurrences.keys()})
+        occurrences.update({x: 0 for x in game.players if x not in occurrences.keys() and not all(x in sol for sol in tree.solutions)})
         hd = heapdict.heapdict(occurrences)
         # hd is a priority queue ordered by occurrences
         ties = [hd.popitem()]  # store the items that appears equal times

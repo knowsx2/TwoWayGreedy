@@ -31,7 +31,7 @@ class Agent:
     def __init__(self, name, val_domain, bid):
         self.name = name
         self.domain = sorted(val_domain)
-        self.set_bid(bid)
+        self.bid = bid
 
     def get_name(self):
         return self.name
