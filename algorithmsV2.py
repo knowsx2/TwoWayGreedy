@@ -61,7 +61,7 @@ def euch_search(tree, game):
                 return {players[i]: current[i] for i in range(len(players))}
         return None
 
-    changes = 0
+    changes = {x: 0 for x in game.players}
     tested_directions = [[value for (_, value) in game.directions.items()]]
     while not check_solutioned_tree(tree):
         occurrences = count_appears(tree)
@@ -94,7 +94,7 @@ def euch_search(tree, game):
                     anchestors += player_first_nodes(tree, player)
         for agent in new_directions.keys():
             if last_directions[agent] != new_directions[agent]:
-                changes += 1
+                changes[agent] += 1
         tested_directions += [[value for (_, value) in last_directions.items()]]
         game.directions = new_directions
 

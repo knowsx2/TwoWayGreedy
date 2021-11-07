@@ -1,5 +1,6 @@
 from random import *
 from agent import Agent
+from game import filter_solutions
 import itertools as it
 
 def remove_sublists(lists):
@@ -37,5 +38,7 @@ def generate():
     for player in players:
         if all(player not in solution for solution in solutions):
             solutions[randrange(len(solutions))].append(player)
-    directions = [randrange(2) for _ in range(n_players)]
+    solutions, players = filter_solutions({players[i]: players[i].domain for i in range(len(players))}, solutions)
+
+    directions = [randrange(2) for _ in range(len(players))]
     return domains, players, directions, solutions
