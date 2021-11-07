@@ -48,6 +48,28 @@ def first_to_appears_order(node, players):
             queue.append(node.yes)
     return order
 
+def changing_order(tree, game):
+    order = []
+    occurrences = count_appears(tree)
+    occurrences.update(
+        {x: 0 for x in game.players if x not in occurrences.keys() and not all(x in sol for sol in tree.solutions)})
+    hd = heapdict.heapdict(occurrences)
+    # hd is a priority queue ordered by occurrences
+    # store the items that appears equal times
+    ties = [hd.popitem()]
+    if ties[0][1] == 0:
+        while len(hd) > 0 and hd.peekitem()[1] == ties[-1][1]:
+            ties += [hd.popitem()]
+    for couple in ties[:]:
+        order.append(couple[0])
+    if len(hd) > 0:
+        ties = [hd.popitem()]
+    while len(hd) > 0 and hd.peekitem()[1] == ties[-1][1]:
+        ties += [hd.popitem()]
+    for agent in first_to_appears_order(tree, game.players)[::-1]:
+        if agent in ties[:][0]:
+            order.append(agent)
+    return order
 
 def euch_search(tree, game):
     def search_direction(players, forbidden):
@@ -63,26 +85,18 @@ def euch_search(tree, game):
 
     changes = {x: 0 for x in game.players}
     tested_directions = [[value for (_, value) in game.directions.items()]]
+    last_agent_changed = None
     while not check_solutioned_tree(tree):
-        occurrences = count_appears(tree)
-        occurrences.update({x: 0 for x in game.players if x not in occurrences.keys() and not all(x in sol for sol in tree.solutions)})
-        hd = heapdict.heapdict(occurrences)
-        # hd is a priority queue ordered by occurrences
-        ties = [hd.popitem()]  # store the items that appears equal times
-        while len(hd) > 0 and hd.peekitem()[1] == ties[-1][1]:
-            ties += [hd.popitem()]
-        anchestors = []
         last_directions = copy.copy(game.directions)
         new_directions = copy.copy(game.directions)
-        for agent in first_to_appears_order(tree, game.players)[::-1]:
-            if agent in ties[:][0]:
-                anchestors = player_first_nodes(tree, agent)
-                new_directions[agent] = 1 - new_directions[agent]
+        anchestors = []
+        order_to_change = changing_order(tree, game)
+        for agent in order_to_change:
+            if last_agent_changed is None or agent != last_agent_changed:
+                agent_to_change = agent
+                last_agent_changed = agent
                 break
-        if not anchestors:
-            anchestors = search_last_nodes(tree)
-            new_directions[ties[0][0]] = 1 - new_directions[ties[0][0]]
-
+        new_directions[agent_to_change] = 1 - new_directions[agent_to_change]
         if [value for (_, value) in new_directions.items()] in tested_directions:
             new_directions = search_direction(game.players, tested_directions)
             if new_directions is None:
@@ -92,6 +106,10 @@ def euch_search(tree, game):
                 anchestors = []
                 for player in change_agents:
                     anchestors += player_first_nodes(tree, player)
+        if agent_to_change in first_to_appears_order(tree, game.players):
+            anchestors = player_first_nodes(tree, agent_to_change)
+        last_nodes = search_last_nodes(tree)
+        anchestors += [x for x in last_nodes if x not in anchestors]
         for agent in new_directions.keys():
             if last_directions[agent] != new_directions[agent]:
                 changes[agent] += 1
