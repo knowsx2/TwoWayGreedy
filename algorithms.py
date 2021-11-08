@@ -41,7 +41,7 @@ def is_ancestor(node, ancestor):
         return False
     if node.parent == ancestor:
         return True
-    return is_anchestor(node.parent, ancestor)
+    return is_ancestor(node.parent, ancestor)
 
 
 def same_player_ancestor(node, domains):

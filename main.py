@@ -47,13 +47,14 @@ def main():
     # solutions = [[a1, a2, a3], [a2, a3, a4], [a1, a3, a4]]
     # solutions = [[a1], [a2, a3]]
 
-    # ******* DA VERIFICARE ********
+    # ******* PARAMETRI ********
+    n_players = 5
 
-    
+
     #bids, players, directions, solutions = generate()
-    bids = [105, 159, 268]
-    players = [Agent("a0", bids, bids[1]), Agent("a1", bids, bids[1]), Agent("a2", bids, bids[1]), Agent("a3", bids, bids[1])]
-    directions, solutions = [0, 0, 0, 0, 0], [[players[1], players[0], players[3]], [players[0], players[2]]]
+    bids = [141, 143, 245]
+    players = [Agent("a" + str(i), bids, bids[0]) for i in range(n_players)]
+    directions, solutions = [0, 0, 0, 0, 0], [[players[0], players[4]], [players[1], players[2], players[3]]]
     print(bids, players, directions, solutions)
     app = App(0)
     '''
@@ -93,6 +94,7 @@ def main():
     game1 = Game(players, directions, bids, solutions)
     game2 = Game(players, directions, bids, solutions)
     game3 = Game(players, directions, bids, solutions)
+    game4 = Game(players, directions, bids, solutions)
 
     node = copy.copy(tree)
 
@@ -104,30 +106,42 @@ def main():
 
     new_tree, changes = algo.euch_search(tree, game1)
     if new_tree is None:
-        print("VERSION 1: non è stata trovata una soluzione con " + str(sum(changes.values())) + " cambi di direzione")
+        print("VERSION 2.1: non è stata trovata una soluzione con " + str(sum(changes.values())) + " cambi di direzione")
     else:
-        print("VERSION 1: sono stati effettuati " + str(changes) + " cambi di direzione: " + str(sum(changes.values())))
-        app.add_frame("Algo1 " + str(game1.directions).replace(": 0", ": out").replace(": 1", ": in"))
+        print("VERSION 2.1: sono stati effettuati " + str(changes) + " cambi di direzione: " + str(sum(changes.values())))
+        app.add_frame("Algo2.1 " + str(game1.directions).replace(": 0", ": out").replace(": 1", ": in"))
         print_node_on_frame(new_tree, app.frame[-1])
 
     tree = copy.copy(node)
     tree = algov2.fill_tree(tree, game2.directions, tree.domains, game2.players)
     new_tree, changes = algov2.euch_search(tree, game2)
     if new_tree is None:
-        print("VERSION 2: non è stata trovata una soluzione con " + str(sum(changes.values())) + " cambi di direzione")
+        print("VERSION 2.2: non è stata trovata una soluzione con " + str(sum(changes.values())) + " cambi di direzione")
     else:
-        print("VERSION 2: sono stati effettuati " + str(changes) + " cambi di direzione: " + str(sum(changes.values())))
-        app.add_frame("Algo2 " + str(game2.directions).replace(": 0", ": out").replace(": 1", ": in"))
+        print("VERSION 2.2: sono stati effettuati " + str(changes) + " cambi di direzione: " + str(sum(changes.values())))
+        app.add_frame("Algo2.2 " + str(game2.directions).replace(": 0", ": out").replace(": 1", ": in"))
+        print_node_on_frame(new_tree, app.frame[-1])
+
+    tree = copy.copy(node)
+    tree = algov2.fill_tree(tree, game4.directions, tree.domains, game4.players)
+    new_tree, changes = algov2.euch_search(tree, game4, False)
+    if new_tree is None:
+        print(
+            "VERSION 2.3: non è stata trovata una soluzione con " + str(sum(changes.values())) + " cambi di direzione")
+    else:
+        print(
+            "VERSION 2.3: sono stati effettuati " + str(changes) + " cambi di direzione: " + str(sum(changes.values())))
+        app.add_frame("Algo2.3 " + str(game4.directions).replace(": 0", ": out").replace(": 1", ": in"))
         print_node_on_frame(new_tree, app.frame[-1])
 
     tree = copy.copy(node)
     tree = algov2.fill_tree(tree, game3.directions, tree.domains, game3.players)
     new_tree, changes = algov2_1.euch_search(tree, game3)
     if new_tree is None:
-        print("VERSION 3: non è stata trovata una soluzione con " + str(sum(changes.values())) + " cambi di direzione")
+        print("VERSION 2.4: non è stata trovata una soluzione con " + str(sum(changes.values())) + " cambi di direzione")
     else:
-        print("VERSION 3: sono stati effettuati " + str(changes) + " cambi di direzione: " + str(sum(changes.values())))
-        app.add_frame("Algo3 " + str(game3.directions).replace(": 0", ": out").replace(": 1", ": in"))
+        print("VERSION 2.4: sono stati effettuati " + str(changes) + " cambi di direzione: " + str(sum(changes.values())))
+        app.add_frame("Algo2.4 " + str(game3.directions).replace(": 0", ": out").replace(": 1", ": in"))
         print_node_on_frame(new_tree, app.frame[-1])
 
     app.MainLoop()
