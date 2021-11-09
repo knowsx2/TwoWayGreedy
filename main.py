@@ -48,16 +48,16 @@ def main():
     # solutions = [[a1], [a2, a3]]
 
     # ******* PARAMETRI ********
-    n_players = 7
+    #n_players = 4
 
 
-    #bids, players, directions, solutions = generate()
-    bids = [153, 304, 655]
-    players = [Agent("a" + str(i), bids, bids[0]) for i in range(n_players)]
-    directions, solutions = [0, 1, 0, 0, 0, 1, 0], [[players[5]], [players[1], players[3], players[4]], [players[1], players[0]], [players[6]], [players[2], players[3]]]
+    bids, players, directions, solutions = generate()
+    #bids = [51, 72, 73, 154, 185]
+    #players = [Agent("a" + str(i), bids, bids[0]) for i in range(n_players)]
+    #directions, solutions = [0, 0, 1, 1], [[players[3], players[2]], [players[3], players[0]], [players[1]]]
     print(bids, players, directions, solutions)
     app = App(0)
-    '''
+
     red_flag = False
     white_flag = False
     for game in all_directions_games(players, bids, solutions):
@@ -71,7 +71,7 @@ def main():
                     app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
                     print_node_on_frame(tree, app.frame[-1])
                     red_flag = True
-    '''
+
     #app.MainLoop()
 
     # testing search of incomplete nodes:
@@ -103,12 +103,7 @@ def main():
     #app.add_frame(str(game1.directions).replace(": 0", ": out").replace(": 1", ": in"))
     #print_node_on_frame(tree, app.frame[-1])
     #app.MainLoop()
-    agenti = [Agent("a" + str(i), bids, bids[0]) for i in range(4)]
-    domini = {agenti[0]: [153, 304], agenti[1]: [655], agenti[2]: [304, 655], agenti[3]: [153]}
-    soluzioni = [[agenti[0], agenti[2], agenti[3]], [agenti[1], agenti[2]]]
-    direzioni = {agenti[i]: 0 if i > 0 else 1 for i in range(len(agenti))}
-    soluzioni, agenti = filter_solutions(domini, soluzioni)
-    test = next(possible_queries(agenti, direzioni, domini, soluzioni), None)
+
     new_tree, changes = algo.euch_search(tree, game1)
     if new_tree is None:
         print("VERSION 2.1: non è stata trovata una soluzione con " + str(sum(changes.values())) + " cambi di direzione")

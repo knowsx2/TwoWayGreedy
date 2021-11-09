@@ -38,9 +38,10 @@ def generate():
                     if randrange(n_players) < 1 and len(solution) < n_players - 2:
                         solution.append(player)
 
+        new_sol=[x for x in solutions if len(x) < n_players-2]
         for player in players:
             if all(player not in solution for solution in solutions):
-                [x for x in solutions if len(x) < n_players-2][randrange(len(solutions))].append(player)
+                new_sol[randrange(len(new_sol))].append(player)
 
         remove_sublists(solutions)
         solutions, players = filter_solutions({players[i]: players[i].domain for i in range(len(players))}, solutions)
