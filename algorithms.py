@@ -193,8 +193,12 @@ def fill_tree(node, directions, domains, players):
         yes_players = copy.copy(players)
         yes_solutions = P_t
         yes_domains = copy.copy(domains)
+        yes_directions = copy.copy(directions)
         yes_domains[node.player] = [node.bid]
-        # yes_players.remove(node.player)
+        if node.direction is not directions[node.player]:
+            # interleaving
+            yes_directions[node.player] = node.direction
+
         yes_solutions, surv_agents = filter_solutions(yes_domains, yes_solutions)
         #yes_solutions = check_solutions(yes_domains, yes_solutions)
         if len(yes_solutions) <= 1:
@@ -205,7 +209,7 @@ def fill_tree(node, directions, domains, players):
                     if player not in surv_agents:
                         yes_players.remove(player)
                         yes_domains.pop(player)
-            node.yes = next(possible_queries(yes_players, directions, yes_domains, yes_solutions), None)
+            node.yes = next(possible_queries(yes_players, yes_directions, yes_domains, yes_solutions), None)
             if node.yes is not None:
                 node.yes.parent = node
                 fill_tree(node.yes, directions, yes_domains, yes_players)

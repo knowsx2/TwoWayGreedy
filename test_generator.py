@@ -11,9 +11,9 @@ def remove_sublists(lists):
     return
 
 def generate():
-    n_domains = randrange(5) + 3
-    n_players = randrange(5) + 3
-    n_solutions = randrange(7) + 2
+    n_domains = randrange(7) + 3
+    n_players = randrange(8) + 3
+    n_solutions = randrange(9) + 2
     domains = []
     players = []
     solutions = []
@@ -25,20 +25,25 @@ def generate():
     for i in range(n_players):
         players.append(Agent("a" + str(i), domains, domains[0]))
 
-    for _ in range(n_solutions):
-        solution = []
+    while len(solutions) < 2:
+        for _ in range(n_solutions):
+            solution = []
+            for player in players:
+                if randrange(n_players) < 1 and len(solution) < n_players-2:
+                    solution.append(player)
+            solutions.append(solution)
+        for solution in solutions:
+            if not solution:
+                for player in players:
+                    if randrange(n_players) < 1 and len(solution) < n_players - 2:
+                        solution.append(player)
+
         for player in players:
-            if randrange(n_players) < 1:
-                solution.append(player)
-        solutions.append(solution)
-    for solution in solutions:
-        if not solution:
-            solution.append(players[randrange(n_players)])
-    remove_sublists(solutions)
-    for player in players:
-        if all(player not in solution for solution in solutions):
-            solutions[randrange(len(solutions))].append(player)
-    solutions, players = filter_solutions({players[i]: players[i].domain for i in range(len(players))}, solutions)
+            if all(player not in solution for solution in solutions):
+                [x for x in solutions if len(x) < n_players-2][randrange(len(solutions))].append(player)
+
+        remove_sublists(solutions)
+        solutions, players = filter_solutions({players[i]: players[i].domain for i in range(len(players))}, solutions)
 
     directions = [randrange(2) for _ in range(len(players))]
     return domains, players, directions, solutions
