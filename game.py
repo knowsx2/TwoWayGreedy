@@ -55,34 +55,8 @@ def filter_solutions(domains, old_solutions):
         for agent in sol:
             if agent not in agents:
                 agents.append(agent)
+    agents = sorted(agents, key=lambda x: int(x.name[1:]))
     return new_solutions, agents
-
-
-def new_ilter_solutions(domains, old_solutions):
-    players = list(domains.keys())
-    solutions = copy.copy(old_solutions)
-    if len(solutions) <= 1:
-        return solutions, players
-    _players = []
-    for player in players:
-        if any(player not in sol for sol in solutions):
-            _players.append(player)
-    minimum = [sum(min(domains[agent]) for agent in sol if agent in _players) for sol in solutions]
-    i = 0
-    for sol in solutions:
-        summ = 0
-        for agent in sol:
-            summ += max(domains[agent]) if agent in _players else 0
-        if any(summ <= boh for boh in minimum[:i] + minimum[i + 1:]):
-            solutions.remove(sol)
-            minimum = minimum[:i] + minimum[i + 1:]
-        i += 1
-    agents = []
-    for sol in solutions:
-        for agent in sol:
-            if agent not in agents:
-                agents.append(agent)
-    return solutions, agents
 
 
 def trees(players, directions, domains, solutions):
