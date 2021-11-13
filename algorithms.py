@@ -72,7 +72,7 @@ def player_first_nodes(node, player):
     return player_first_nodes(node.no, player) + player_first_nodes(node.yes, player)
 
 
-def search_direction(av_dir, last):
+def old_search_direction(av_dir, last):
     if not av_dir:
         return None
     diffs = heapdict.heapdict()
@@ -83,10 +83,30 @@ def search_direction(av_dir, last):
     return list(diffs.popitem()[0])
 
 
+def search_direction(av_dir, last):
+    if not av_dir:
+        return None
+    queue = [last]
+    viewed = set()
+    while queue:
+        current = queue.pop()
+        for i in range(len(current)):
+            new_dir = copy.copy(current)
+            new_dir[i] = 1 - new_dir[i]
+            if tuple(new_dir) in viewed:
+                continue
+            if tuple(new_dir) in av_dir:
+                return new_dir
+            queue.append(new_dir)
+            viewed.add(tuple(new_dir))
+    return None
+
+
 def euch_search(tree, game):
     changes = {x: 0 for x in game.players}
     #tested_directions = [[value for (_, value) in game.directions.items()]]
-    av_dir = list(it.product([0, 1], repeat=len(game.players)))
+    av_dir = set(it.product([0, 1], repeat=len(game.players)))
+    av_dir.remove(tuple(value for (_, value) in game.directions.items()))
     while not check_solutioned_tree(tree):
         nodes = search_last_nodes(tree)
         anchestors = []
@@ -99,12 +119,12 @@ def euch_search(tree, game):
         for player in change_agents:
             new_directions[player] = 1 - new_directions[player]
             anchestors += player_first_nodes(tree, player)
-        if [value for (_, value) in new_directions.items()] in tested_directions:
-            dir = search_direction(av_dir, last_directions.values())
-            new_directions = {game.players[i]: dir[i] for i in range(len(game.players))}
-            if new_directions is None:
+        if tuple([value for (_, value) in new_directions.items()]) not in av_dir:
+            dir = search_direction(av_dir, list(last_directions.values()))
+            if dir is None:
                 return None, changes
             else:
+                new_directions = {game.players[i]: dir[i] for i in range(len(game.players))}
                 change_agents = [agent for agent in list(new_directions.keys()) if last_directions[agent] != new_directions[agent]]
                 anchestors = []
                 for player in change_agents:
@@ -112,8 +132,8 @@ def euch_search(tree, game):
         for agent in new_directions.keys():
             if last_directions[agent] != new_directions[agent]:
                 changes[agent] += 1
-        tested_directions += [[value for (_, value) in last_directions.items()]]
-        all_dir.remove([value for (_, value) in last_directions.items()])
+        #tested_directions += [[value for (_, value) in last_directions.items()]]
+        av_dir.remove(tuple([value for (_, value) in new_directions.items()]))
         game.directions = new_directions
         for node in anchestors:
             new = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions), None)

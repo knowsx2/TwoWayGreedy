@@ -5,8 +5,7 @@ from builtins import sum, max, min
 
 
 class Game:
-    def __init__(self, players, directions, bids, solutions):
-        self.bids = sorted(bids)
+    def __init__(self, players, directions, solutions):
         self.players = players
         self.directions = {players[i]: directions[i] for i in range(len(players))}
         self.domains = {players[i]: players[i].domain for i in range(len(players))}
@@ -139,7 +138,7 @@ def trees(players, directions, domains, solutions):
 def all_directions_games(players, bids, solutions):
     directions = list(it.product([0, 1], repeat=len(players)))
     for direction in directions:
-        yield Game(players, direction, bids, solutions)
+        yield Game(players, direction, solutions)
 
 
 def possible_queries(players, directions, domains, solutions):

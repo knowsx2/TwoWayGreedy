@@ -75,7 +75,7 @@ def euch_search(tree, game, flag=True):
     changes = {x: 0 for x in game.players}
     #tested_directions = [[value for (_, value) in game.directions.items()]]
     last_agent_changed = None
-    av_dir = list(it.product([0, 1], repeat=len(game.players)))
+    av_dir = set(it.product([0, 1], repeat=len(game.directions.keys())))
     av_dir.remove(tuple(value for (_, value) in game.directions.items()))
     while not check_solutioned_tree(tree):
         last_directions = copy.copy(game.directions)
