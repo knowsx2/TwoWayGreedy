@@ -102,7 +102,7 @@ def search_direction(av_dir, last):
     return None
 
 
-def euch_search(tree, game):
+def euch_search(tree, game, appr):
     changes = {x: 0 for x in game.players}
     #tested_directions = [[value for (_, value) in game.directions.items()]]
     av_dir = set(it.product([0, 1], repeat=len(game.players)))
@@ -136,37 +136,17 @@ def euch_search(tree, game):
         av_dir.remove(tuple([value for (_, value) in new_directions.items()]))
         game.directions = new_directions
         for node in anchestors:
-            new = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions), None)
+            new = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions, appr), None)
             if new is None and node.parent is not None:
                 node.parent.no = node.parent.yes = None
                 continue
             if new is not None:
-                node.change(fill_tree(new, game.directions, new.domains, list(new.domains.keys())))
+                node.change(fill_tree(new, game.directions, new.domains, list(new.domains.keys()), appr))
     return tree, changes
 
 
 # ciao
-def fill_tree(node, directions, domains, players):
-    '''
-    def check_solutions(domains, old_solutions):
-        solutions = copy.copy(old_solutions)
-        if len(solutions) <= 1:
-            return solutions
-        _players = []
-        for player in players:
-            if any(player not in sol for sol in solutions):
-                _players.append(player)
-        maximum = [sum(max(domains[agent]) for agent in sol if agent in _players) for sol in solutions]
-        i = 0
-        for sol in solutions:
-            summ = 0
-            for agent in sol:
-                summ += min(domains[agent]) if agent in _players else 0
-            if all(summ >= boh for boh in maximum[:i] + maximum[i + 1:]):
-                return [sol]
-            i += 1
-        return solutions
-    '''
+def fill_tree(node, directions, domains, players, appr=1):
 
     solutions, surv_agents = filter_solutions(node.domains, node.solutions)
     #solutions = check_solutions(node.domains, solutions)
@@ -199,10 +179,10 @@ def fill_tree(node, directions, domains, players):
         if surv_agents is not None:
             no_players = copy.copy(surv_agents)
             no_domains = {agent: no_domains[agent] for agent in no_players}
-        node.no = next(possible_queries(no_players, no_directions, no_domains, no_solutions), None)
+        node.no = next(possible_queries(no_players, no_directions, no_domains, no_solutions, appr), None)
         if node.no is not None:
             node.no.parent = node
-            fill_tree(node.no, no_directions, no_domains, no_players)
+            fill_tree(node.no, no_directions, no_domains, no_players, appr)
 
     # "yes" side of node
     P_t = [solution for solution in node.solutions if node.player in solution] if node.direction else \
@@ -229,8 +209,8 @@ def fill_tree(node, directions, domains, players):
                 yes_players = copy.copy(surv_agents)
                 yes_domains = {agent: yes_domains[agent] for agent in yes_players}
 
-            node.yes = next(possible_queries(yes_players, yes_directions, yes_domains, yes_solutions), None)
+            node.yes = next(possible_queries(yes_players, yes_directions, yes_domains, yes_solutions, appr), None)
             if node.yes is not None:
                 node.yes.parent = node
-                fill_tree(node.yes, directions, yes_domains, yes_players)
+                fill_tree(node.yes, directions, yes_domains, yes_players, appr)
     return node

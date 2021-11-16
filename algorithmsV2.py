@@ -1,5 +1,6 @@
 from collections import Counter
 from algorithms import *
+from math import log
 
 
 # Cambia il nodo che ha cambiato meno e in caso di parità quello che ha effettuato il primo cambio per ultimo
@@ -48,6 +49,7 @@ def first_to_appears_order(node, players):
             queue.append(node.yes)
     return order
 
+
 def changing_order(tree, game, flag=True):
     order = []
     occurrences = count_appears(tree)
@@ -71,9 +73,10 @@ def changing_order(tree, game, flag=True):
             order.append(agent)
     return order if flag else order[::-1]
 
-def euch_search(tree, game, flag=True):
+
+def euch_search(tree, game, appr=1, flag=True):
     changes = {x: 0 for x in game.players}
-    #tested_directions = [[value for (_, value) in game.directions.items()]]
+    # tested_directions = [[value for (_, value) in game.directions.items()]]
     last_agent_changed = None
     av_dir = set(it.product([0, 1], repeat=len(game.directions.keys())))
     av_dir.remove(tuple(value for (_, value) in game.directions.items()))
@@ -94,26 +97,29 @@ def euch_search(tree, game, flag=True):
                 return None, changes
             else:
                 new_directions = {game.players[i]: dir[i] for i in range(len(game.players))}
-                change_agents = [agent for agent in list(new_directions.keys()) if last_directions[agent] != new_directions[agent]]
+                change_agents = [agent for agent in list(new_directions.keys()) if
+                                 last_directions[agent] != new_directions[agent]]
                 for player in change_agents:
                     anchestors += player_first_nodes(tree, player)
 
         elif agent_to_change in first_to_appears_order(tree, game.players):
             anchestors += player_first_nodes(tree, agent_to_change)
         last_nodes = search_last_nodes(tree)
-        anchestors += [x for x in last_nodes if x not in anchestors and all([not is_ancestor(x, k) for k in anchestors])]
+        anchestors += [x for x in last_nodes if
+                       x not in anchestors and all([not is_ancestor(x, k) for k in anchestors])]
         for agent in new_directions.keys():
             if last_directions[agent] != new_directions[agent]:
                 changes[agent] += 1
-        #tested_directions += [[value for (_, value) in new_directions.items()]]
+        # tested_directions += [[value for (_, value) in new_directions.items()]]
         av_dir.remove(tuple(value for (_, value) in new_directions.items()))
         game.directions = new_directions
 
         for node in anchestors:
-            new = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions), None)
+            new = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions,
+                                        appr), None)
             if new is None and node.parent is not None:
                 node.parent.no = node.parent.yes = None
                 continue
             if new is not None:
-                node.change(fill_tree(new, game.directions, node.domains, list(node.domains.keys())))
+                node.change(fill_tree(new, game.directions, node.domains, list(node.domains.keys()), appr))
     return tree, changes

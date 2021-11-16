@@ -135,13 +135,13 @@ def trees(players, directions, domains, solutions):
             yield node
 
 
-def all_directions_games(players, bids, solutions):
+def all_directions_games(players, solutions):
     directions = list(it.product([0, 1], repeat=len(players)))
     for direction in directions:
         yield Game(players, direction, solutions)
 
 
-def possible_queries(players, directions, domains, solutions):
+def possible_queries(players, directions, domains, solutions, appr=1):
     def is_query_possible(node):
         def in_val(sol):
             value = 0
@@ -182,11 +182,11 @@ def possible_queries(players, directions, domains, solutions):
         if node.direction:
             best = max([solution for solution in node.solutions if node.player not in solution], key=a_sum)
             worst = min([solution for solution in node.solutions if node.player in solution], key=in_val)
-            return True if in_val(worst) >= a_sum(best) else False
+            return True if in_val(worst) >= (1/appr)*a_sum(best) else False
         else:
             worst = min([solution for solution in node.solutions if node.player not in solution], key=a_sum)
             best = max([solution for solution in node.solutions if node.player in solution], key=out_val)
-            return True if a_sum(worst) >= out_val(best) else False
+            return True if a_sum(worst) >= (1/appr)*out_val(best) else False
 
     fl_inter = True
     for player in players:

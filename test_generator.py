@@ -13,11 +13,14 @@ def remove_sublists(lists):
 
 
 def generate():
-    n_solutions = randrange(5) + 3
-    n_players = randrange(5) + 3
+    n_solutions = randrange(12) + 6
+    n_players = randrange(10) + 10
     domains = []
     players = []
     solutions = []
+
+    '''
+    ********** Equal domains for agents **********
     domain = []
     for _ in range(3):
         domain.append(choice([i for i in range(1, n_players * 3 * 2 * n_solutions) if i not in domain]))
@@ -26,39 +29,13 @@ def generate():
     '''
     for _ in range(n_players):
         domain = []
-        n_domains = 3
+        n_domains = 5
         for _ in range(n_domains):
             domain.append(choice([i for i in range(1, n_players * n_domains * 2 * n_solutions) if i not in domain]))
         domain = sorted(domain)
         domains.append(domain)
-    
-    for i in range(n_players):
-        players.append(Agent("a" + str(i), domains[i], domains[i][0]))
-    
-    while len(solutions) < 2:
-        for _ in range(n_solutions):
-            solution = []
-            for player in players:
-                if randrange(n_players) < 1 and len(solution) < n_players - 2:
-                    solution.append(player)
-            solutions.append(solution)
-        for solution in solutions:
-            if not solution:
-                for player in players:
-                    if randrange(n_players) < 1 and len(solution) < n_players - 2:
-                        solution.append(player)
 
-        for player in players:
-            if all(player not in solution for solution in solutions):
-                min(solutions, key=lambda x: len(x)).append(player)
-
-        solutions = remove_sublists(solutions)
-        solutions, players = filter_solutions({players[i]: players[i].domain for i in range(len(players))}, solutions)
-        if not players:
-            for i in range(n_players):
-                players.append(Agent("a" + str(i), domains[i], domains[i][0]))
-    '''
-    while len(solutions) < 2 or len(players) < 3:
+    while len(solutions) < 2 or len(players) < 5:
         solutions = []
         players = []
         for i in range(n_players):
