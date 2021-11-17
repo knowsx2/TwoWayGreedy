@@ -63,7 +63,9 @@ def main():
 
             # testing search of incomplete nodes:
             temp_game = Game(players, directions, solutions)
-            tree = next(possible_queries(players, temp_game.directions, temp_game.domains, solutions, appr), None)
+            tree = next(possible_queries(players, temp_game.directions, temp_game.domains, solutions), None)
+            if tree is None:
+                tree = next(possible_queries(players, temp_game.directions, temp_game.domains, solutions, appr), None)
             av_dir = set(it.product([0, 1], repeat=len(directions)))
             flag = False
             while tree is None:
@@ -72,8 +74,10 @@ def main():
                 if new_dir is not None:
                     directions = new_dir
                     temp_game = Game(players, directions, solutions)
-                    tree = next(possible_queries(players, temp_game.directions, temp_game.domains, solutions,
-                                                 appr), None)
+                    tree = next(possible_queries(players, temp_game.directions, temp_game.domains, solutions), None)
+                    if tree is None:
+                        tree = next(possible_queries(players, temp_game.directions, temp_game.domains, solutions, appr),
+                                    None)
                 else:
                     # print({players[i]: players[i].domain for i in range(len(players))}, directions, solutions)
                     # print("non ci sono nodi iniziali con qualsiasi direzione")

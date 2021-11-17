@@ -115,8 +115,10 @@ def euch_search(tree, game, appr=1, flag=True):
         game.directions = new_directions
 
         for node in anchestors:
-            new = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions,
-                                        appr), None)
+            new = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions), None)
+            if new is None:
+                new = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions,
+                                            appr), None)
             if new is None and node.parent is not None:
                 node.parent.no = node.parent.yes = None
                 continue

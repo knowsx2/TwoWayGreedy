@@ -136,7 +136,9 @@ def euch_search(tree, game, appr):
         av_dir.remove(tuple([value for (_, value) in new_directions.items()]))
         game.directions = new_directions
         for node in anchestors:
-            new = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions, appr), None)
+            new = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions), None)
+            if new is None:
+                new = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions, appr), None)
             if new is None and node.parent is not None:
                 node.parent.no = node.parent.yes = None
                 continue
@@ -179,7 +181,9 @@ def fill_tree(node, directions, domains, players, appr=1):
         if surv_agents is not None:
             no_players = copy.copy(surv_agents)
             no_domains = {agent: no_domains[agent] for agent in no_players}
-        node.no = next(possible_queries(no_players, no_directions, no_domains, no_solutions, appr), None)
+        node.no = next(possible_queries(no_players, no_directions, no_domains, no_solutions), None)
+        if node.no is None:
+            node.no = next(possible_queries(no_players, no_directions, no_domains, no_solutions, appr), None)
         if node.no is not None:
             node.no.parent = node
             fill_tree(node.no, no_directions, no_domains, no_players, appr)
@@ -209,7 +213,9 @@ def fill_tree(node, directions, domains, players, appr=1):
                 yes_players = copy.copy(surv_agents)
                 yes_domains = {agent: yes_domains[agent] for agent in yes_players}
 
-            node.yes = next(possible_queries(yes_players, yes_directions, yes_domains, yes_solutions, appr), None)
+            node.yes = next(possible_queries(yes_players, yes_directions, yes_domains, yes_solutions), None)
+            if node.yes is None:
+                node.yes = next(possible_queries(yes_players, yes_directions, yes_domains, yes_solutions, appr), None)
             if node.yes is not None:
                 node.yes.parent = node
                 fill_tree(node.yes, directions, yes_domains, yes_players, appr)
