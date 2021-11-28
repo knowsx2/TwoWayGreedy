@@ -38,7 +38,8 @@ def generate(n_players=None, n_solutions=None, len_domain=None):
         domain = sorted(domain)
         domains.append(domain)
 
-    while len(solutions) < 2 or len(players) != n_players:
+    new_players = []
+    while len(solutions) < 2 or len(new_players) != n_players:
         solutions = []
         players = []
         for i in range(n_players):
@@ -47,7 +48,16 @@ def generate(n_players=None, n_solutions=None, len_domain=None):
             solution = sample(players, randrange(1, n_players))
             solutions.append(solution)
         remove_sublists(solutions)
-        solutions, players = filter_solutions({players[i]: players[i].domain for i in range(n_players)}, solutions)
-
-    directions = [randrange(2) for _ in range(len(players))]
+        solutions, new_players = filter_solutions({players[i]: players[i].domain for i in range(n_players)}, solutions)
+        if len(solutions) < 2:
+            continue
+        eliminated = set(players)-set(new_players)
+        for player in eliminated:
+            new_players.append(player)
+            sol = choice(solutions)
+            sol.append(player)
+        remove_sublists(solutions)
+        solutions, new_players = filter_solutions({new_players[i]: new_players[i].domain for i in range(n_players)},
+                                                      solutions)
+    directions = [randrange(2) for _ in range(len(new_players))]
     return players, directions, solutions
