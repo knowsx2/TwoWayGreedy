@@ -39,7 +39,7 @@ def euch_search(tree, game):
         av_dir.remove(tuple([value for (_, value) in new_directions.items()]))
         game.directions = new_directions
         for node in anchestors:
-            new = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions), None)
+            new, _ = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions), (None,1))
             if new is None and node.parent is not None:
                 node.parent.no = node.parent.yes = None
                 continue

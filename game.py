@@ -16,8 +16,8 @@ class Game:
         return list(trees(self.players, self.directions, self.domains, self.solutions))
 
     def __str__(self):
-        string = "bid: " + str(self.bids) + " | " + "sol: " + str(self.solutions) + " | " + "ply: " + str(self.players) \
-                 + " | " + "dirs: " + str(self.directions) + " | " + "dms: " + str(self.domains)
+        string = "dms: " + str(self.domains) + " | " + "dirs: " + str(self.directions) + " | " + "sol: " \
+                 + str(self.solutions)
         return string
 
 
@@ -58,7 +58,7 @@ def filter_solutions(domains, old_solutions):
     return new_solutions, agents
 
 
-def trees(players, directions, domains, solutions):
+def trees(players, directions, domains, solutions, appr=1):
     '''
     def check_solutions(domains, old_solutions):
         solutions = copy.copy(old_solutions)
@@ -91,7 +91,7 @@ def trees(players, directions, domains, solutions):
             if player in surv_agents:
                 new_players.append(player)
                 # domains.pop(player)
-        for node in list(possible_queries(new_players, directions, domains, solutions)):
+        for node, new_appr in list(possible_queries(new_players, directions, domains, solutions, appr)):
             # "no" side of node
             no_domains = copy.copy(domains)
             no_players = copy.copy(players)
@@ -112,7 +112,7 @@ def trees(players, directions, domains, solutions):
             no_solutions, surv_agents = filter_solutions(no_domains, no_solutions)
             # no_solutions = check_solutions(no_domains, no_solutions)
 
-            node.no = list(trees(no_players, no_directions, no_domains, no_solutions))
+            node.no = list(trees(no_players, no_directions, no_domains, no_solutions, new_appr))
             if not node.no:
                 node.no = [None]
             # "yes" side of node
@@ -129,7 +129,7 @@ def trees(players, directions, domains, solutions):
                 # yes_players.remove(node.player)
                 yes_solutions, surv_agents = filter_solutions(yes_domains, yes_solutions)
                 # yes_solutions = check_solutions(yes_domains, yes_solutions)
-                node.yes = list(trees(yes_players, directions, yes_domains, yes_solutions))
+                node.yes = list(trees(yes_players, directions, yes_domains, yes_solutions, new_appr))
                 if not node.yes:
                     node.yes = [None]
             yield node
@@ -149,9 +149,9 @@ def possible_queries(players, directions, domains, solutions, appr=1):
                 if agent is player:
                     value += bid
                 elif agent in considered_agents:
-                    value += domains[agent][-1]
-                else:
                     value += domains[agent][0]
+                else:
+                    value += domains[agent][-1]
             return value
 
         def out_val(sol):
@@ -160,9 +160,9 @@ def possible_queries(players, directions, domains, solutions, appr=1):
                 if agent is player:
                     value += bid
                 elif agent in considered_agents:
-                    value += domains[agent][0]
-                else:
                     value += domains[agent][-1]
+                else:
+                    value += domains[agent][0]
             return value
 
         def a_sum(sol):
@@ -177,16 +177,29 @@ def possible_queries(players, directions, domains, solutions, appr=1):
 
         considered_agents = []
         for sol in node.solutions:
-            if node.player not in sol:
+            if node.player in sol:
                 considered_agents += [agent for agent in sol if agent not in considered_agents]
         if node.direction:
             best = max([solution for solution in node.solutions if node.player not in solution], key=a_sum)
             worst = min([solution for solution in node.solutions if node.player in solution], key=in_val)
-            return True if in_val(worst) >= (1/appr)*a_sum(best) else False
+            if in_val(worst) >= (1 / appr) * a_sum(best):
+                if in_val(worst) / a_sum(best) < 1:
+                    return True, in_val(worst) / a_sum(best)
+                else:
+                    return True, 1
+            else:
+                return False, 1
+
         else:
             worst = min([solution for solution in node.solutions if node.player not in solution], key=a_sum)
             best = max([solution for solution in node.solutions if node.player in solution], key=out_val)
-            return True if a_sum(worst) >= (1/appr)*out_val(best) else False
+            if a_sum(worst) >= (1 / appr) * out_val(best):
+                if a_sum(worst) / out_val(best) < 1:
+                    return True, a_sum(worst) / out_val(best)
+                else:
+                    return True, 1
+            else:
+                return False, 1
 
     fl_inter = True
     for player in players:
@@ -195,9 +208,10 @@ def possible_queries(players, directions, domains, solutions, appr=1):
         dire = directions[player]
         bid = domains[player][-1] if dire else domains[player][0]
         node = Node(solutions, player, dire, bid, domains)
-        if is_query_possible(node):
+        is_possible, ro = is_query_possible(node)
+        if is_possible:
             fl_inter = False
-            yield node
+            yield node, appr * ro
 
     if fl_inter:
         for player in players:
@@ -207,8 +221,9 @@ def possible_queries(players, directions, domains, solutions, appr=1):
                 dire = 1 - directions[player]
                 bid = domains[player][-2] if directions[player] else domains[player][1]
                 node = Node(solutions, player, dire, bid, domains)
-                if is_query_possible(node):
-                    yield node
+                is_possible, ro = is_query_possible(node)
+                if is_possible:
+                    yield node, appr * ro
 
 
 def check_solutioned_tree(node):
@@ -219,3 +234,12 @@ def check_solutioned_tree(node):
     if node.no.player is None and node.yes.player is None:
         return True
     return check_solutioned_tree(node.no) and check_solutioned_tree(node.yes)
+
+def check_if_sol_exists(list):
+    for node in list:
+        if node.player is None:
+            return True
+        if all(x is None for x in node.no) or all(x is None for x in node.yes):
+            continue
+        return check_if_sol_exists(node.no) and check_if_sol_exists(node.yes)
+    return False

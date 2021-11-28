@@ -12,9 +12,13 @@ def remove_sublists(lists):
     return
 
 
-def generate():
-    n_solutions = randrange(12) + 6
-    n_players = randrange(10) + 10
+def generate(n_players=None, n_solutions=None, len_domain=None):
+    if n_players is None:
+        n_players = randrange(5) + 6
+    if n_solutions is None:
+        n_solutions = randrange(3, 12)
+    if len_domain is None:
+        len_domain = 4
     domains = []
     players = []
     solutions = []
@@ -29,13 +33,12 @@ def generate():
     '''
     for _ in range(n_players):
         domain = []
-        n_domains = 5
-        for _ in range(n_domains):
-            domain.append(choice([i for i in range(1, n_players * n_domains * 2 * n_solutions) if i not in domain]))
+        for _ in range(len_domain):
+            domain.append(choice([i for i in range(1, n_players * len_domain * 2 * n_solutions) if i not in domain]))
         domain = sorted(domain)
         domains.append(domain)
 
-    while len(solutions) < 2 or len(players) < 5:
+    while len(solutions) < 2 or len(players) != n_players:
         solutions = []
         players = []
         for i in range(n_players):

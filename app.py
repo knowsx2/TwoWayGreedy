@@ -16,7 +16,7 @@ class App(wx.App):
     def add_frame(self, name="Prova"):
         self.frame.append(Frame(name))
         self.frame[-1].Show()
-        self.SetTopWindow(self.frame[-1])
+        #self.SetTopWindow(self.frame[-1])
 
 
 class Frame(wx.Frame):
