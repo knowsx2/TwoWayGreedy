@@ -1,8 +1,7 @@
 from algorithmsV2 import *
 
 
-def euch_search(tree, game):
-
+def euch_search(tree, game, appr = 1):
     changes = {x: 0 for x in game.players}
     #tested_directions = [[value for (_, value) in game.directions.items()]]
     last_player_changed = None
@@ -39,10 +38,15 @@ def euch_search(tree, game):
         av_dir.remove(tuple([value for (_, value) in new_directions.items()]))
         game.directions = new_directions
         for node in anchestors:
-            new, _ = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions), (None,1))
-            if new is None and node.parent is not None:
+            new_node = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions),
+                            None)
+            if new_node is None:
+                new_node = next(
+                    possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions,
+                                     node.ro * appr), None)
+            if new_node is None and node.parent is not None:
                 node.parent.no = node.parent.yes = None
                 continue
-            if new is not None:
-                node.change(fill_tree(new, game.directions, node.domains, list(node.domains.keys())))
+            if new_node is not None:
+                node.change(fill_tree(new_node, game.directions, node.domains, list(node.domains.keys()), new_node.ro * appr))
     return tree, changes

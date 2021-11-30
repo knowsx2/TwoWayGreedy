@@ -58,8 +58,8 @@ def main():
             vett_changes = []
             outliners = []
             counter = 0
-            while counter_total_finish < 250:
-                players, directions, solutions = generate(n_players=n_players)
+            while counter_total_finish < 100:
+                players, directions, solutions = generate(n_players, 5, 3)
                 # print({players[i]: players[i].domain for i in range(len(players))}, directions, solutions)
                 # app = App(0)
                 appr = 1
@@ -166,27 +166,15 @@ def main():
                 new_tree, changes = algov2.euch_search(tree, game2, new_appr)
                 t2 = time.process_time() - t2_start
                 if new_tree is None:
-                    #print(stampa_game, file=fx)
-                    #print("VERSION 2.2: non è stata trovata una soluzione con " + str(
-                    #    sum(changes.values())) + " cambi di direzione. t= %0.3f" % t2, file=fx)
-                    #print("VERSION 2.2: non è stata trovata una soluzione con " + str(
-                    #    sum(changes.values())) + " cambi di direzione. t= %0.3f" % t2)
                     time_without_solutions.append(t2)
-                    #if exists:
-                    #    solution_exists_but_not_found += 1
                 else:
                     if sum(changes.values()) > 0:
-                        #print(stampa_game, file=fx)
-                        #print("VERSION 2.2: sono stati effettuati " + str(changes) + " cambi di direzione: " + str(
-                        #    sum(changes.values())) + ". t= %0.3f" % t2, file=fx)
-                        #print(stampa_game)
-                        #print("VERSION 2.2: sono stati effettuati " + str(changes) + " cambi di direzione: " + str(
-                        #    sum(changes.values())) + ". t= %0.3f" % t2)
                         time_with_solutions.append(t2)
                         vett_changes.append(sum(changes.values()))
                         if sum(changes.values()) <= trashout_fast_finish:
                             counter_fast_finish += 1
                         counter_total_finish += 1
+                        #print(counter_total_finish, counter)
                         if sum(changes.values()) >= trashout_outliner:
                             outliners.append(sum(changes.values()))
                             print(str(param_game) + "\n", file=fx)
@@ -250,6 +238,7 @@ def main():
             #sol_exists_not_found.append(solution_exists_but_not_found)
 
         fig, axs = plt.subplots(3, 1)  # Create a figure containing a single axes.
+        fig.set_size_inches(18.5, 10.5)
 
         axs[0].plot(range(n_from, n_to), avarage_time_w_sol, 'g', label="av time with sols")  # Plot some data on the axes.
         axs[0].plot(range(n_from, n_to), avarage_time_wo_sol, 'r', label="av time with no sols")

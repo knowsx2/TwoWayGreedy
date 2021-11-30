@@ -83,7 +83,7 @@ def trees(players, directions, domains, solutions, appr=1):
     solutions, surv_agents = filter_solutions(domains, solutions)
     # solutions = check_solutions(domains, solutions)
     if len(solutions) <= 1:
-        yield Node(solutions)
+        yield Node(solutions, ro=1)
     else:
         new_players = []
 
@@ -91,7 +91,7 @@ def trees(players, directions, domains, solutions, appr=1):
             if player in surv_agents:
                 new_players.append(player)
                 # domains.pop(player)
-        for node, new_appr in list(possible_queries(new_players, directions, domains, solutions, appr)):
+        for node in list(possible_queries(new_players, directions, domains, solutions, appr)):
             # "no" side of node
             no_domains = copy.copy(domains)
             no_players = copy.copy(players)
@@ -112,7 +112,7 @@ def trees(players, directions, domains, solutions, appr=1):
             no_solutions, surv_agents = filter_solutions(no_domains, no_solutions)
             # no_solutions = check_solutions(no_domains, no_solutions)
 
-            node.no = list(trees(no_players, no_directions, no_domains, no_solutions, new_appr))
+            node.no = list(trees(no_players, no_directions, no_domains, no_solutions, appr=appr))
             if not node.no:
                 node.no = [None]
             # "yes" side of node
@@ -129,7 +129,7 @@ def trees(players, directions, domains, solutions, appr=1):
                 # yes_players.remove(node.player)
                 yes_solutions, surv_agents = filter_solutions(yes_domains, yes_solutions)
                 # yes_solutions = check_solutions(yes_domains, yes_solutions)
-                node.yes = list(trees(yes_players, directions, yes_domains, yes_solutions, new_appr))
+                node.yes = list(trees(yes_players, directions, yes_domains, yes_solutions, appr * node.ro))
                 if not node.yes:
                     node.yes = [None]
             yield node
@@ -148,10 +148,8 @@ def possible_queries(players, directions, domains, solutions, appr=1):
             for agent in sol:
                 if agent is player:
                     value += bid
-                elif agent in considered_agents:
-                    value += domains[agent][0]
                 else:
-                    value += domains[agent][-1]
+                    value += domains[agent][0]
             return value
 
         def out_val(sol):
@@ -159,29 +157,29 @@ def possible_queries(players, directions, domains, solutions, appr=1):
             for agent in sol:
                 if agent is player:
                     value += bid
-                elif agent in considered_agents:
-                    value += domains[agent][-1]
                 else:
-                    value += domains[agent][0]
+                    value += domains[agent][-1]
             return value
 
         def a_sum(sol):
             value = 0
             if dire:
                 for agent in sol:
-                    value += domains[agent][-1]
+                    if agent in worst:
+                        value += domains[agent][0]
+                    else:
+                        value += domains[agent][-1]
             else:
                 for agent in sol:
-                    value += domains[agent][0]
+                    if agent in best:
+                        value += domains[agent][-1]
+                    else:
+                        value += domains[agent][0]
             return value
 
-        considered_agents = []
-        for sol in node.solutions:
-            if node.player in sol:
-                considered_agents += [agent for agent in sol if agent not in considered_agents]
         if node.direction:
-            best = max([solution for solution in node.solutions if node.player not in solution], key=a_sum)
             worst = min([solution for solution in node.solutions if node.player in solution], key=in_val)
+            best = max([solution for solution in node.solutions if node.player not in solution], key=a_sum)
             if in_val(worst) >= (1 / appr) * a_sum(best):
                 if in_val(worst) / a_sum(best) < 1:
                     return True, in_val(worst) / a_sum(best)
@@ -191,8 +189,8 @@ def possible_queries(players, directions, domains, solutions, appr=1):
                 return False, 1
 
         else:
-            worst = min([solution for solution in node.solutions if node.player not in solution], key=a_sum)
             best = max([solution for solution in node.solutions if node.player in solution], key=out_val)
+            worst = min([solution for solution in node.solutions if node.player not in solution], key=a_sum)
             if a_sum(worst) >= (1 / appr) * out_val(best):
                 if a_sum(worst) / out_val(best) < 1:
                     return True, a_sum(worst) / out_val(best)
@@ -210,8 +208,9 @@ def possible_queries(players, directions, domains, solutions, appr=1):
         node = Node(solutions, player, dire, bid, domains)
         is_possible, ro = is_query_possible(node)
         if is_possible:
+            node.ro = ro
             fl_inter = False
-            yield node, appr * ro
+            yield node
 
     if fl_inter:
         for player in players:
@@ -223,7 +222,8 @@ def possible_queries(players, directions, domains, solutions, appr=1):
                 node = Node(solutions, player, dire, bid, domains)
                 is_possible, ro = is_query_possible(node)
                 if is_possible:
-                    yield node, appr * ro
+                    node.ro = ro
+                    yield node
 
 
 def check_solutioned_tree(node):

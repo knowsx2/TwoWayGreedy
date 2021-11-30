@@ -1,5 +1,5 @@
 class Node:
-    def __init__(self, solutions, player=None, direction=None, bid=None, domains=None):
+    def __init__(self, solutions, player=None, direction=None, bid=None, domains=None, ro=1):
         self.player = player
         self.direction = direction
         self.bid = bid
@@ -8,7 +8,7 @@ class Node:
         self.yes = None
         self.no = None
         self.parent = None
-
+        self.ro = ro
 
     def get_player(self):
         return self.player
@@ -48,9 +48,10 @@ class Node:
         self.yes = node.yes
         self.no = node.no
         self.parent = node.parent
+        self.ro = node.ro
 
     def __str__(self):
         strdir = "in" if self.direction == 1 else "out"
         string = "ply: " + str(self.player) + " | " + "dir: " + strdir + " | " + "bid: " + str(self.bid) \
-                 + " | " + "sol:: " + str(self.solutions)
+                 + " | " + "sol:: " + str(self.solutions) + " | " + "ro:: " + str(round(self.ro, 2))
         return string

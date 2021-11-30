@@ -74,7 +74,7 @@ def changing_order(tree, game, flag=True):
     return order if flag else order[::-1]
 
 
-def euch_search(tree, game, appr=1, flag=True):
+def euch_search(tree, game, des_appr=1, flag=True):
     changes = {x: 0 for x in game.players}
     # tested_directions = [[value for (_, value) in game.directions.items()]]
     last_agent_changed = None
@@ -115,13 +115,13 @@ def euch_search(tree, game, appr=1, flag=True):
         game.directions = new_directions
 
         for node in anchestors:
-            new, new_appr = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions), (None,1))
-            if new is None:
-                new, new_appr = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions,
-                                            appr), (None,1))
-            if new is None and node.parent is not None:
+            new_node = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions), None)
+            if new_node is None:
+                new_node = next(possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions,
+                                            compute_node_appr(node, des_appr)), None)
+            if new_node is None and node.parent is not None:
                 node.parent.no = node.parent.yes = None
                 continue
-            if new is not None:
-                node.change(fill_tree(new, game.directions, node.domains, list(node.domains.keys()), new_appr))
+            if new_node is not None:
+                node.change(fill_tree(new_node, game.directions, node.domains, list(node.domains.keys()), des_appr))
     return tree, changes

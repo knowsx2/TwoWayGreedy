@@ -48,7 +48,7 @@ for n_players in range(n_from, n_to):
     vett_changes = [[], [], [], []]
     outliners = [[], [], [], []]
     solution_exists_but_not_found = 0
-    while counter_total_finish[0] < 250:
+    while counter_total_finish[0] < 100:
         players, directions, solutions = generate(n_players, 5, 3)
         # print({players[i]: players[i].domain for i in range(len(players))}, directions, solutions)
         # app = App(0)
@@ -212,6 +212,7 @@ for n_players in range(n_from, n_to):
     # sol_exists_not_found.append(solution_exists_but_not_found)
 
 fig, axs = plt.subplots(4, 1)  # Create a figure containing a single axes.
+fig.set_size_inches(18.5, 10.5)
 
 axs[0].plot(range(n_from, n_to), avarage_time_w_sol[0], 'g',
             label="v1")  # Plot some data on the axes.
@@ -222,7 +223,7 @@ axs[0].plot(range(n_from, n_to), avarage_time_w_sol[2], 'r',
 axs[0].plot(range(n_from, n_to), avarage_time_w_sol[3], 'b',
             label="v4")
 axs[0].set_ylabel("time (s)")
-axs[0].legend()
+axs[0].legend(loc= 'upper left')
 # axs[0].plot(range(n_from, n_to), avarage_time_bf_w_sol, 'b', label="av time bf with sols")
 # axs[0].plot(range(n_from, n_to), avarage_time_bf_wo_sol, 'm', label="av time bf with no sols")
 axs[1].plot(range(n_from, n_to), avarage_time_wo_sol[0], 'g',
@@ -234,14 +235,14 @@ axs[1].plot(range(n_from, n_to), avarage_time_wo_sol[2], 'r',
 axs[1].plot(range(n_from, n_to), avarage_time_wo_sol[3], 'b',
             label="v4")
 axs[1].set_ylabel("time (s)")
-axs[1].legend()
+axs[1].legend(loc= 'upper left')
 
 axs[2].plot(range(n_from, n_to), [x[0] for x in avarage_changes[0]], 'g', label="v1")
 axs[2].plot(range(n_from, n_to), [x[0] for x in avarage_changes[1]], 'm', label="v2")
 axs[2].plot(range(n_from, n_to), [x[0] for x in avarage_changes[2]], 'r', label="v3")
 axs[2].plot(range(n_from, n_to), [x[0] for x in avarage_changes[3]], 'b', label="v4")
 axs[2].set_ylabel("avarage changes")
-axs[2].legend()
+axs[2].legend(loc= 'upper left')
 
 axs[3].plot(range(n_from, n_to), ratio_fast_finish[0], 'go', label="v1")
 axs[3].plot(range(n_from, n_to), ratio_fast_finish[1], 'mo', label="v2")
@@ -249,5 +250,5 @@ axs[3].plot(range(n_from, n_to), ratio_fast_finish[2], 'ro', label="v3")
 axs[3].plot(range(n_from, n_to), ratio_fast_finish[3], 'bo', label="v4")
 axs[3].set_ylabel("ratio fast finish")
 axs[3].set_xlabel("n_players")
-axs[3].legend()
+axs[3].legend(loc= 'upper left')
 plt.savefig("sperimental_analysis")

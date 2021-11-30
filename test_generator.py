@@ -2,7 +2,7 @@ from random import *
 from agent import Agent
 from game import filter_solutions
 import itertools as it
-
+import math
 
 def remove_sublists(lists):
     for list1, list2 in it.permutations(lists, 2):
@@ -33,8 +33,8 @@ def generate(n_players=None, n_solutions=None, len_domain=None):
     '''
     for _ in range(n_players):
         domain = []
-        for _ in range(len_domain):
-            domain.append(choice([i for i in range(1, n_players * len_domain * 2 * n_solutions) if i not in domain]))
+        for j in range(len_domain):
+            domain.append(choice([i for i in range(j+1, n_players**math.ceil(math.sqrt(n_players))) if i not in domain]))
         domain = sorted(domain)
         domains.append(domain)
 
@@ -45,7 +45,7 @@ def generate(n_players=None, n_solutions=None, len_domain=None):
         for i in range(n_players):
             players.append(Agent("a" + str(i), domains[i], domains[i][0]))
         for _ in range(n_solutions):
-            solution = sample(players, randrange(1, n_players))
+            solution = sample(players, randrange(1, math.ceil(math.sqrt(n_players))))
             solutions.append(solution)
         remove_sublists(solutions)
         solutions, new_players = filter_solutions({players[i]: players[i].domain for i in range(n_players)}, solutions)
@@ -60,4 +60,4 @@ def generate(n_players=None, n_solutions=None, len_domain=None):
         solutions, new_players = filter_solutions({new_players[i]: new_players[i].domain for i in range(n_players)},
                                                       solutions)
     directions = [randrange(2) for _ in range(len(new_players))]
-    return players, directions, solutions
+    return new_players, directions, solutions
