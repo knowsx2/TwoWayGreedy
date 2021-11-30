@@ -168,7 +168,7 @@ for n_players in range(n_from, n_to):
         tree = copy.copy(node)
         tree = algov2.fill_tree(tree, game4.directions, tree.domains, game4.players, new_appr)
         t3_start = time.process_time()
-        new_tree, changes = algov2.euch_search(tree, game4,new_appr, False)
+        new_tree, changes = algov2.euch_search(tree, game4, new_appr, False)
         t3 = time.process_time() - t3_start
         if new_tree is None:
             time_without_solutions[2].append(t3)

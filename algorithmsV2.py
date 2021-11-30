@@ -68,10 +68,11 @@ def changing_order(tree, game, flag=True):
         ties = [hd.popitem()]
         while len(hd) > 0 and hd.peekitem()[1] == ties[-1][1]:
             ties += [hd.popitem()]
-        for agent in first_to_appears_order(tree, game.players)[::-1]:
+        appears_order = first_to_appears_order(tree, game.players)[::-1] if flag else first_to_appears_order(tree, game.players)
+        for agent in appears_order:
             if any(agent == couple[0] for couple in ties):
                 order.append(agent)
-    return order if flag else order[::-1]
+    return order if flag else order
 
 
 def euch_search(tree, game, des_appr=1, flag=True):
