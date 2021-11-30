@@ -39,7 +39,7 @@ app.MainLoop()
 game = Game(players, (1, 1, 0), solutions)
 tree = Node(solutions, player=game.players[1], direction=1, bid=bids[-1], domains=game.domains)
 app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
-tree = fill_tree(tree, game.directions, tree.domains, game.players, appr=4/3)
+tree = fill_tree(tree, game.directions, tree.domains, game.players, des_appr=1)
 print_node_on_frame(tree, app.frame[-1])
 new_tree, changes = euch_search(tree, game)
 if new_tree is None:

@@ -64,20 +64,20 @@ def changing_order(tree, game, flag=True):
             ties += [hd.popitem()]
     for couple in ties[:]:
         order.append(couple[0])
-    if len(hd) > 0:
+    while len(hd) > 0:
         ties = [hd.popitem()]
-    while len(hd) > 0 and hd.peekitem()[1] == ties[-1][1]:
-        ties += [hd.popitem()]
-    for agent in first_to_appears_order(tree, game.players)[::-1]:
-        if agent in ties[:][0]:
-            order.append(agent)
+        while len(hd) > 0 and hd.peekitem()[1] == ties[-1][1]:
+            ties += [hd.popitem()]
+        for agent in first_to_appears_order(tree, game.players)[::-1]:
+            if any(agent == couple[0] for couple in ties):
+                order.append(agent)
     return order if flag else order[::-1]
 
 
 def euch_search(tree, game, des_appr=1, flag=True):
     changes = {x: 0 for x in game.players}
     # tested_directions = [[value for (_, value) in game.directions.items()]]
-    last_agent_changed = None
+    last_agents_changed = None
     av_dir = set(it.product([0, 1], repeat=len(game.directions.keys())))
     av_dir.remove(tuple(value for (_, value) in game.directions.items()))
     while not check_solutioned_tree(tree):
@@ -86,9 +86,11 @@ def euch_search(tree, game, des_appr=1, flag=True):
         anchestors = []
         order_to_change = changing_order(tree, game, flag)
         for agent in order_to_change:
-            if last_agent_changed is None or agent != last_agent_changed:
+            if agent not in last_agents_changed:
                 agent_to_change = agent
-                last_agent_changed = agent
+                last_agents_changed.append(agent)
+                if len(last_agents_changed) == len(order_to_change):
+                    last_agents_changed = [agent_to_change]
                 break
         new_directions[agent_to_change] = 1 - new_directions[agent_to_change]
         if tuple([value for (_, value) in new_directions.items()]) not in av_dir:

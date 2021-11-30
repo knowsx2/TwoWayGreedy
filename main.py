@@ -8,21 +8,13 @@ from agent import Agent
 from app import *
 from test_generator import generate
 import algorithms as algo
-import algorithmsV2 as algov2
+import algorithmsV2_temp as algov2
 import algorithmsV2_1 as algov2_1
 import copy
 import heapdict
 import time
 from math import log
 import matplotlib.pyplot as plt
-
-def run_app(root):
-    app = App(0)
-    print_node_on_frame(root, app.frame[0])
-    app.add_frame()
-    print_node_on_frame(root, app.frame[1])
-    print(display(root))
-    app.MainLoop()
 
 
 def main():
@@ -98,11 +90,11 @@ def main():
                 '''
 
                 temp_game = Game(players, directions, solutions)
-                tree, new_appr = next(possible_queries(players, temp_game.directions, temp_game.domains, solutions),
-                                      (None, 1))
+                tree = next(possible_queries(players, temp_game.directions, temp_game.domains, solutions),
+                            None)
                 if tree is None:
-                    tree, new_appr = next(
-                        possible_queries(players, temp_game.directions, temp_game.domains, solutions, appr), (None, 1))
+                    tree = next(
+                        possible_queries(players, temp_game.directions, temp_game.domains, solutions, appr), None)
                 av_dir = set(it.product([0, 1], repeat=len(directions)))
                 flag = False
                 while tree is None:
@@ -111,12 +103,12 @@ def main():
                     if new_dir is not None:
                         directions = new_dir
                         temp_game = Game(players, directions, solutions)
-                        tree, new_appr = next(
-                            possible_queries(players, temp_game.directions, temp_game.domains, solutions), (None, 1))
+                        tree = next(
+                            possible_queries(players, temp_game.directions, temp_game.domains, solutions), None)
                         if tree is None:
-                            tree, new_appr = next(
+                            tree = next(
                                 possible_queries(players, temp_game.directions, temp_game.domains, solutions, appr),
-                                (None, 1))
+                                None)
                     else:
                         #print(stampa_game)
                         #print("non ci sono nodi iniziali con qualsiasi direzione")
@@ -161,9 +153,9 @@ def main():
                 '''
                 tree = copy.copy(node)
                 param_game = copy.copy(game2)
-                tree = algov2.fill_tree(tree, game2.directions, tree.domains, game2.players, new_appr)
+                tree = algov2.fill_tree(tree, game2.directions, tree.domains, game2.players, appr)
                 t2_start = time.process_time()
-                new_tree, changes = algov2.euch_search(tree, game2, new_appr)
+                new_tree, changes = algov2.euch_search(tree, game2, appr)
                 t2 = time.process_time() - t2_start
                 if new_tree is None:
                     time_without_solutions.append(t2)
