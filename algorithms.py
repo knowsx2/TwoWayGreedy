@@ -111,7 +111,7 @@ def euch_search(tree, game, des_appr=1):
             new_directions[player] = 1 - new_directions[player]
             anchestors += player_first_nodes(tree, player)
         if tuple([value for (_, value) in new_directions.items()]) not in av_dir:
-            dir = search_direction(av_dir, list(last_directions.values()), changes)
+            dir = search_direction(av_dir, list(last_directions.values()))
             if dir is None:
                 return None, changes
             else:

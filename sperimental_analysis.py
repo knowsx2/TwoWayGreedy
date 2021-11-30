@@ -88,11 +88,11 @@ for n_players in range(n_from, n_to):
         '''
 
         temp_game = Game(players, directions, solutions)
-        tree, new_appr = next(possible_queries(players, temp_game.directions, temp_game.domains, solutions),
-                              (None, 1))
+        tree = next(possible_queries(players, temp_game.directions, temp_game.domains, solutions),
+                              None)
         if tree is None:
-            tree, new_appr = next(
-                possible_queries(players, temp_game.directions, temp_game.domains, solutions, appr), (None, 1))
+            tree = next(
+                possible_queries(players, temp_game.directions, temp_game.domains, solutions, appr), None)
         av_dir = set(it.product([0, 1], repeat=len(directions)))
         flag = False
         while tree is None:
@@ -101,12 +101,12 @@ for n_players in range(n_from, n_to):
             if new_dir is not None:
                 directions = new_dir
                 temp_game = Game(players, directions, solutions)
-                tree, new_appr = next(
-                    possible_queries(players, temp_game.directions, temp_game.domains, solutions), (None, 1))
+                tree = next(
+                    possible_queries(players, temp_game.directions, temp_game.domains, solutions), None)
                 if tree is None:
-                    tree, new_appr = next(
+                    tree = next(
                         possible_queries(players, temp_game.directions, temp_game.domains, solutions, appr),
-                        (None, 1))
+                        None)
             else:
                 # print(stampa_game)
                 # print("non ci sono nodi iniziali con qualsiasi direzione")
@@ -125,13 +125,13 @@ for n_players in range(n_from, n_to):
 
         node = copy.copy(tree)
 
-        tree = algov2.fill_tree(tree, game1.directions, tree.domains, game1.players, new_appr)
+        tree = algov2.fill_tree(tree, game1.directions, tree.domains, game1.players, appr)
         # app.add_frame(str(game1.directions).replace(": 0", ": out").replace(": 1", ": in"))
         # print_node_on_frame(tree, app.frame[-1])
         # app.MainLoop()
 
         t1_start = time.process_time()
-        new_tree, changes = algo.euch_search(tree, game1, new_appr)
+        new_tree, changes = algo.euch_search(tree, game1, appr)
         t1 = time.process_time() - t1_start
         stampa_flag = True
         if new_tree is None:
@@ -149,9 +149,9 @@ for n_players in range(n_from, n_to):
                     outliners[0].append(sum(changes.values()))
 
         tree = copy.copy(node)
-        tree = algov2.fill_tree(tree, game2.directions, tree.domains, game2.players, new_appr)
+        tree = algov2.fill_tree(tree, game2.directions, tree.domains, game2.players, appr)
         t2_start = time.process_time()
-        new_tree, changes = algov2.euch_search(tree, game2, new_appr)
+        new_tree, changes = algov2.euch_search(tree, game2, appr)
         t2 = time.process_time() - t2_start
         if new_tree is None:
             time_without_solutions[1].append(t2)
@@ -166,9 +166,9 @@ for n_players in range(n_from, n_to):
                     outliners[1].append(sum(changes.values()))
 
         tree = copy.copy(node)
-        tree = algov2.fill_tree(tree, game4.directions, tree.domains, game4.players, new_appr)
+        tree = algov2.fill_tree(tree, game4.directions, tree.domains, game4.players, appr)
         t3_start = time.process_time()
-        new_tree, changes = algov2.euch_search(tree, game4, new_appr, False)
+        new_tree, changes = algov2.euch_search(tree, game4, appr, False)
         t3 = time.process_time() - t3_start
         if new_tree is None:
             time_without_solutions[2].append(t3)
@@ -183,7 +183,7 @@ for n_players in range(n_from, n_to):
                     outliners[2].append(sum(changes.values()))
 
         tree = copy.copy(node)
-        tree = algov2.fill_tree(tree, game3.directions, tree.domains, game3.players, new_appr)
+        tree = algov2.fill_tree(tree, game3.directions, tree.domains, game3.players, appr)
         t4_start = time.process_time()
         new_tree, changes = algov2_1.euch_search(tree, game3)
         t4 = time.process_time() - t4_start

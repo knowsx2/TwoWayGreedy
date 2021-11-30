@@ -78,7 +78,7 @@ def changing_order(tree, game, flag=True):
 def euch_search(tree, game, des_appr=1, flag=True):
     changes = {x: 0 for x in game.players}
     # tested_directions = [[value for (_, value) in game.directions.items()]]
-    last_agents_changed = None
+    last_agents_changed = []
     av_dir = set(it.product([0, 1], repeat=len(game.directions.keys())))
     av_dir.remove(tuple(value for (_, value) in game.directions.items()))
     while not check_solutioned_tree(tree):

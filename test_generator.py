@@ -14,13 +14,12 @@ def remove_sublists(lists):
 
 def generate(n_players=None, n_solutions=None, len_domain=None):
     if n_players is None:
-        n_players = randrange(5) + 6
+        n_players = 8
     if n_solutions is None:
-        n_solutions = randrange(3, 12)
+        n_solutions = 5
     if len_domain is None:
-        len_domain = 4
+        len_domain = 3
     domains = []
-    players = []
     solutions = []
 
     '''
