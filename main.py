@@ -8,7 +8,7 @@ from agent import Agent
 from app import *
 from test_generator import generate
 import algorithms as algo
-import algorithmsV2_temp as algov2
+import algorithmsV2 as algov2
 import algorithmsV2_1 as algov2_1
 import copy
 import heapdict
@@ -36,7 +36,7 @@ def main():
         avarage_time_bf_w_sol = []
         avarage_time_bf_wo_sol = []
         all_vett_changes = []
-        n_from = 5
+        n_from = 11
         n_to = 14
         for n_players in range(n_from, n_to):
             time_without_solutions = []

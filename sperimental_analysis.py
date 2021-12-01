@@ -35,7 +35,7 @@ avarage_time_bf_w_sol = [[], [], [], []]
 avarage_time_bf_wo_sol = [[], [], [], []]
 all_vett_changes = [[], [], [], []]
 n_from = 5
-n_to = 14
+n_to = 11
 for n_players in range(n_from, n_to):
     time_without_solutions = [[], [], [], []]
     time_with_solutions = [[], [], [], []]
