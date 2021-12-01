@@ -121,6 +121,9 @@ def euch_search(tree, game, des_appr=1):
                 anchestors = []
                 for player in change_agents:
                     anchestors += player_first_nodes(tree, player)
+                for node in nodes:
+                    if all([not is_ancestor(node, anch) for anch in anchestors]):
+                        anchestors += [node]
         for agent in new_directions.keys():
             if last_directions[agent] != new_directions[agent]:
                 changes[agent] += 1

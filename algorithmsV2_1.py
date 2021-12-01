@@ -27,6 +27,9 @@ def euch_search(tree, game, appr = 1):
                 change_agents = [agent for agent in list(new_directions.keys()) if last_directions[agent] != new_directions[agent]]
                 for player in change_agents:
                     anchestors += player_first_nodes(tree, player)
+                for node in search_last_nodes(tree):
+                    if all([not is_ancestor(node, anch) for anch in anchestors]):
+                        anchestors += [node]
         else:
             anchestors = player_first_nodes(tree, agent)
         last_nodes = search_last_nodes(tree)
