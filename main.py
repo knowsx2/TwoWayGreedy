@@ -36,7 +36,7 @@ def main():
         avarage_time_bf_w_sol = []
         avarage_time_bf_wo_sol = []
         all_vett_changes = []
-        n_from = 11
+        n_from = 5
         n_to = 14
         for n_players in range(n_from, n_to):
             time_without_solutions = []
@@ -52,7 +52,7 @@ def main():
             counter = 0
             while counter_total_finish < 100:
                 players, directions, solutions = generate(n_players, 5, 3)
-                # print({players[i]: players[i].domain for i in range(len(players))}, directions, solutions)
+                #print({players[i]: players[i].domain for i in range(len(players))}, directions, solutions)
                 # app = App(0)
                 appr = 1
                 '''
@@ -159,6 +159,7 @@ def main():
                 t2 = time.process_time() - t2_start
                 if new_tree is None:
                     time_without_solutions.append(t2)
+                    #print(sum(changes.values()))
                 else:
                     if sum(changes.values()) > 0:
                         time_with_solutions.append(t2)
@@ -166,7 +167,7 @@ def main():
                         if sum(changes.values()) <= trashout_fast_finish:
                             counter_fast_finish += 1
                         counter_total_finish += 1
-                        #print(counter_total_finish, counter)
+                        print(counter_total_finish, counter)
                         if sum(changes.values()) >= trashout_outliner:
                             outliners.append(sum(changes.values()))
                             print(str(param_game) + "\n", file=fx)

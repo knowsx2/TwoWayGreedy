@@ -16,7 +16,7 @@ def generate(n_players=None, n_solutions=None, len_domain=None):
     if n_players is None:
         n_players = 8
     if n_solutions is None:
-        n_solutions = 5
+        n_solutions = 7
     if len_domain is None:
         len_domain = 3
     domains = []
@@ -33,7 +33,7 @@ def generate(n_players=None, n_solutions=None, len_domain=None):
     for _ in range(n_players):
         domain = []
         for j in range(len_domain):
-            domain.append(choice([i for i in range(j+1, n_players**math.ceil(math.sqrt(n_players))) if i not in domain]))
+            domain.append(choice([i for i in range(1, (j+1)*100) if i not in domain]))
         domain = sorted(domain)
         domains.append(domain)
 
@@ -44,7 +44,7 @@ def generate(n_players=None, n_solutions=None, len_domain=None):
         for i in range(n_players):
             players.append(Agent("a" + str(i), domains[i], domains[i][0]))
         for _ in range(n_solutions):
-            solution = sample(players, randrange(1, math.ceil(math.sqrt(n_players))))
+            solution = sample(players, randrange(1, math.ceil(n_players/4)+1))
             solutions.append(solution)
         remove_sublists(solutions)
         solutions, new_players = filter_solutions({players[i]: players[i].domain for i in range(n_players)}, solutions)
@@ -53,8 +53,7 @@ def generate(n_players=None, n_solutions=None, len_domain=None):
         eliminated = set(players)-set(new_players)
         for player in eliminated:
             new_players.append(player)
-            sol = choice(solutions)
-            sol.append(player)
+            solutions.append([player])
         remove_sublists(solutions)
         solutions, new_players = filter_solutions({new_players[i]: new_players[i].domain for i in range(n_players)},
                                                       solutions)

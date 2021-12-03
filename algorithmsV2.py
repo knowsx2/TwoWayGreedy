@@ -58,10 +58,9 @@ def changing_order(tree, game, flag=True):
     hd = heapdict.heapdict(occurrences)
     # hd is a priority queue ordered by occurrences
     # store the items that appears equal times
-    ties = [hd.popitem()]
-    if ties[0][1] == 0:
-        while len(hd) > 0 and hd.peekitem()[1] == ties[-1][1]:
-            ties += [hd.popitem()]
+    ties = []
+    while len(hd) > 0 and hd.peekitem()[1] == 0:
+        ties += [hd.popitem()]
     for couple in ties[:]:
         order.append(couple[0])
     while len(hd) > 0:
