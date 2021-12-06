@@ -14,9 +14,9 @@ def remove_sublists(lists):
 
 def generate(n_players=None, n_solutions=None, len_domain=None):
     if n_players is None:
-        n_players = 8
+        n_players = randrange(5, 11)
     if n_solutions is None:
-        n_solutions = 7
+        n_solutions = 5
     if len_domain is None:
         len_domain = 3
     domains = []
@@ -44,7 +44,7 @@ def generate(n_players=None, n_solutions=None, len_domain=None):
         for i in range(n_players):
             players.append(Agent("a" + str(i), domains[i], domains[i][0]))
         for _ in range(n_solutions):
-            solution = sample(players, randrange(1, math.ceil(n_players/4)+1))
+            solution = sample(players, randrange(1, math.ceil(n_players/n_solutions)+1))
             solutions.append(solution)
         remove_sublists(solutions)
         solutions, new_players = filter_solutions({players[i]: players[i].domain for i in range(n_players)}, solutions)
@@ -54,8 +54,8 @@ def generate(n_players=None, n_solutions=None, len_domain=None):
         for player in eliminated:
             new_players.append(player)
             solutions.append([player])
-        remove_sublists(solutions)
-        solutions, new_players = filter_solutions({new_players[i]: new_players[i].domain for i in range(n_players)},
-                                                      solutions)
+        #remove_sublists(solutions)
+        #solutions, new_players = filter_solutions({new_players[i]: new_players[i].domain for i in range(n_players)},
+        #                                              solutions)
     directions = [randrange(2) for _ in range(len(new_players))]
     return new_players, directions, solutions

@@ -1,22 +1,24 @@
 from algorithmsV2 import *
 
-
-def euch_search(tree, game, appr = 1):
+def euch_search(tree, game, des_appr = 1):
     changes = {x: 0 for x in game.players}
     #tested_directions = [[value for (_, value) in game.directions.items()]]
-    last_player_changed = None
+    last_agents_changed = []
     av_dir = set(it.product([0, 1], repeat=len(game.directions.keys())))
     av_dir.remove(tuple(value for (_, value) in game.directions.items()))
     while not check_solutioned_tree(tree):
         last_directions = copy.copy(game.directions)
         new_directions = copy.copy(game.directions)
+        order_to_change = first_to_appears_order(tree, game.players)[::-1]
 
-        for player in first_to_appears_order(tree, game.players)[::-1]:
-            if last_player_changed is None or player != last_player_changed:
-                agent = player
-                last_player_changed = player
+        for agent in order_to_change:
+            if agent not in last_agents_changed:
+                agent_to_change = agent
+                last_agents_changed.append(agent)
+                if len(last_agents_changed) == len(order_to_change):
+                    last_agents_changed = [agent_to_change]
                 break
-        new_directions[agent] = 1 - new_directions[agent]
+        new_directions[agent_to_change] = 1 - new_directions[agent_to_change]
         anchestors = []
         if tuple([value for (_, value) in new_directions.items()]) not in av_dir:
             dir = search_direction(av_dir, list(last_directions.values()))
@@ -31,7 +33,7 @@ def euch_search(tree, game, appr = 1):
                     if all([not is_ancestor(node, anch) for anch in anchestors]):
                         anchestors += [node]
         else:
-            anchestors = player_first_nodes(tree, agent)
+            anchestors += player_first_nodes(tree, agent_to_change)
         last_nodes = search_last_nodes(tree)
         anchestors += [x for x in last_nodes if x not in anchestors and all([not is_ancestor(x, k) for k in anchestors])]
         for agent in new_directions.keys():
@@ -46,10 +48,10 @@ def euch_search(tree, game, appr = 1):
             if new_node is None:
                 new_node = next(
                     possible_queries(list(node.domains.keys()), game.directions, node.domains, node.solutions,
-                                     node.ro * appr), None)
+                                     compute_node_appr(node, des_appr)), None)
             if new_node is None and node.parent is not None:
                 node.parent.no = node.parent.yes = None
                 continue
             if new_node is not None:
-                node.change(fill_tree(new_node, game.directions, node.domains, list(node.domains.keys()), new_node.ro * appr))
+                node.change(fill_tree(new_node, game.directions, node.domains, list(node.domains.keys()), des_appr))
     return tree, changes
