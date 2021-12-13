@@ -1,37 +1,33 @@
 import wx
 from game import check_solutioned_tree
 
+
 class App(wx.App):
+    """
+    Class used to show trees on monitor.
+    """
     def OnInit(self):
         self.frame = []
-        """
-        # viene mostrata la finestra
-        for a in self.frame:
-            a.Show()
-        # imposta la finestra principale
-        self.SetTopWindow(self.frame[0])
-        """
         return 1
 
-    def add_frame(self, name="Prova"):
+    def add_frame(self, name="Tree"):
         self.frame.append(Frame(name))
         self.frame[-1].Show()
-        #self.SetTopWindow(self.frame[-1])
 
 
 class Frame(wx.Frame):
     def __init__(self, name):
-        # Chiama il costruttore di wxFrame.
+        # Call wxFrame constructor.
         wx.Frame.__init__(self, None, -1, name)
         self.pnl = wx.ScrolledWindow(self, -1)
         self.pnl.SetScrollbars(1, 1, 600, 400)
 
 
 def print_node_on_frame(node, frame):
+    # print the tree on frame and set the background white if tree is complete, else red
     st = wx.StaticText(frame.pnl, label=display(node), style=wx.ALIGN_LEFT)
     font = wx.Font()
     font.SetFamily(wx.FONTFAMILY_MODERN)
-    #font.SetPointSize(40)
     st.SetFont(font)
     if not check_solutioned_tree(node):
         frame.SetBackgroundColour('#E52B50')

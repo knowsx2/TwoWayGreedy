@@ -1,8 +1,11 @@
 from algorithmsV2 import *
 
+# Changes the last agent to appears first
+
 def euch_search(tree, game, des_appr = 1):
+    # Search a complete mechanism from incomplete
+    # return new tree and the changes made
     changes = {x: 0 for x in game.players}
-    #tested_directions = [[value for (_, value) in game.directions.items()]]
     last_agents_changed = []
     av_dir = set(it.product([0, 1], repeat=len(game.directions.keys())))
     av_dir.remove(tuple(value for (_, value) in game.directions.items()))
@@ -39,7 +42,6 @@ def euch_search(tree, game, des_appr = 1):
         for agent in new_directions.keys():
             if last_directions[agent] != new_directions[agent]:
                 changes[agent] += 1
-        #tested_directions += [[value for (_, value) in last_directions.items()]]
         av_dir.remove(tuple([value for (_, value) in new_directions.items()]))
         game.directions = new_directions
         for node in anchestors:

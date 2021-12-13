@@ -16,16 +16,6 @@ import time
 from math import log
 import matplotlib.pyplot as plt
 
-
-# ******* PARAMETRI ********
-
-# n_players = 4
-# bids = [29, 735, 1035, 1348, 1516, 3490, 4105, 4506, 4926, 5247, 5833, 5908, 6609]
-# players = [Agent("a" + str(i), bids, bids[0]) for i in range(n_players)]
-# players = [Agent("a0", bids, bids[0]), Agent("a9", bids, bids[0]), Agent("a1", bids, bids[0]), Agent("a2", bids, bids[0]), Agent("a3", bids, bids[0]), Agent("a8", bids, bids[0]), Agent("a6", bids, bids[0]), Agent("a7", bids, bids[0]), Agent("a5", bids, bids[0]), Agent("a4", bids, bids[0])]
-# directions = [0, 1, 1, 0, 0, 0, 0, 0, 1, 0]
-# solutions = [[players[0], players[9], players[1]], [players[0], players[2]], [players[2], players[9], players[3]], [players[2], players[8]], [players[6], players[9]], [players[7]], [players[0], players[5]], [players[4], players[9]]]
-
 avarage_time_w_sol = []
 avarage_time_wo_sol = []
 ratio_fast_finish = []
@@ -47,13 +37,9 @@ vett_changes = [[], [], [], []]
 outliners = [[], [], [], []]
 solution_exists_but_not_found = 0
 for i in range(100):
-    print(i)
-
     players, directions, solutions = generate()
     trashout_fast_finish = max((2 ** len(players)) / 50, 2 * len(players))
     trashout_outliner = (2 ** len(players)) / 10
-    # print({players[i]: players[i].domain for i in range(len(players))}, directions, solutions)
-    # app = App(0)
     appr = 1
     '''
     #  ** ** ** ** ** ** ** ** BRUTEFORCE ** ** ** ** ** ** ** **
@@ -71,27 +57,8 @@ for i in range(100):
         time_bruteforce_with_no_solutions.append(tb)
     '''
 
-    '''
-    **************** BRUTE FORCE ****************
-    red_flag = False
-    white_flag = False
-    for game in all_directions_games(players, solutions):
-        for trees in game.compute_all_trees():
-            for tree in list(elaborate_trees(trees)):
-                if not white_flag and check_solutioned_tree(tree):
-                    app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
-                    print_node_on_frame(tree, app.frame[-1])
-                    white_flag = True
-                if not red_flag and not check_solutioned_tree(tree):
-                    app.add_frame(str(game.directions).replace(": 0", ": out").replace(": 1", ": in"))
-                    print_node_on_frame(tree, app.frame[-1])
-                    red_flag = True
-    app.MainLoop()
-    '''
-
     temp_game = Game(players, directions, solutions)
-    tree = next(possible_queries(players, temp_game.directions, temp_game.domains, solutions),
-                          None)
+    tree = next(possible_queries(players, temp_game.directions, temp_game.domains, solutions), None)
     if tree is None:
         tree = next(
             possible_queries(players, temp_game.directions, temp_game.domains, solutions, appr), None)
@@ -109,28 +76,16 @@ for i in range(100):
                 tree = next(
                     possible_queries(players, temp_game.directions, temp_game.domains, solutions, appr),
                     None)
-        else:
-            # print(stampa_game)
-            # print("non ci sono nodi iniziali con qualsiasi direzione")
-            flag = True
-            break
-    if flag:
-        # print("\n")
-        continue
 
     game1 = Game(players, directions, solutions)
     game2 = Game(players, directions, solutions)
     game3 = Game(players, directions, solutions)
     game4 = Game(players, directions, solutions)
 
-    # print(game2, file=fx)
 
     node = copy.copy(tree)
 
     tree = algov2.fill_tree(tree, game1.directions, tree.domains, game1.players, appr)
-    # app.add_frame(str(game1.directions).replace(": 0", ": out").replace(": 1", ": in"))
-    # print_node_on_frame(tree, app.frame[-1])
-    # app.MainLoop()
 
     t1_start = time.process_time()
     new_tree, changes = algo.euch_search(tree, game1, appr)

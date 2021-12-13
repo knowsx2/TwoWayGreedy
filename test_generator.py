@@ -4,7 +4,20 @@ from game import filter_solutions
 import itertools as it
 import math
 
+
 def remove_sublists(lists):
+    """
+    Modifies the list removing each sublist of other list
+
+    Parameters
+    ----------
+    lists: list
+        list of lists
+
+    Returns
+    -------
+
+    """
     for list1, list2 in it.permutations(lists, 2):
         if set(list1) <= set(list2):
             if list1 in lists:
@@ -13,6 +26,34 @@ def remove_sublists(lists):
 
 
 def generate(n_players=None, n_solutions=None, len_domain=None):
+    """
+    Generate casual parameters for a game
+
+    Parameters
+    ----------
+    n_players: int
+        number of desired agents in the game.
+        If None will be chose a casual number from 5 to 10
+
+    n_solutions: int
+        number of desired agents in the game.
+        If None it will be set to 5
+
+    len_domain: int
+        number of element in each player's domain.
+        If None it will be set to 3
+
+    Returns
+    -------
+    new_players : agent list
+
+    directions: int list
+        Elements are 0 (to indicate out direction) or 1 (to indicate in direction) for each player in new_players
+
+    solutions: list of agent lists
+        Represents the available solutions of the game
+
+    """
     if n_players is None:
         n_players = randrange(5, 11)
     if n_solutions is None:
@@ -23,7 +64,7 @@ def generate(n_players=None, n_solutions=None, len_domain=None):
     solutions = []
 
     '''
-    ********** Equal domains for agents **********
+    ********** Equal domains for all agents **********
     domain = []
     for _ in range(3):
         domain.append(choice([i for i in range(1, n_players * 3 * 2 * n_solutions) if i not in domain]))
@@ -31,9 +72,10 @@ def generate(n_players=None, n_solutions=None, len_domain=None):
         domains.append(domain)
     '''
     for _ in range(n_players):
+        # casual domains for agents
         domain = []
         for j in range(len_domain):
-            domain.append(choice([i for i in range(1, (j+1)*100) if i not in domain]))
+            domain.append(choice([i for i in range(1, (j + 1) * 100) if i not in domain]))
         domain = sorted(domain)
         domains.append(domain)
 
@@ -44,18 +86,15 @@ def generate(n_players=None, n_solutions=None, len_domain=None):
         for i in range(n_players):
             players.append(Agent("a" + str(i), domains[i], domains[i][0]))
         for _ in range(n_solutions):
-            solution = sample(players, randrange(1, math.ceil(n_players/n_solutions)+1))
+            solution = sample(players, randrange(1, math.ceil(n_players / n_solutions) + 1))
             solutions.append(solution)
         remove_sublists(solutions)
         solutions, new_players = filter_solutions({players[i]: players[i].domain for i in range(n_players)}, solutions)
         if len(solutions) < 2:
             continue
-        eliminated = set(players)-set(new_players)
+        eliminated = set(players) - set(new_players)
         for player in eliminated:
             new_players.append(player)
             solutions.append([player])
-        #remove_sublists(solutions)
-        #solutions, new_players = filter_solutions({new_players[i]: new_players[i].domain for i in range(n_players)},
-        #                                              solutions)
     directions = [randrange(2) for _ in range(len(new_players))]
     return new_players, directions, solutions

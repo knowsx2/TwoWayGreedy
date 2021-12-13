@@ -3,8 +3,9 @@ from algorithms import *
 from math import log
 
 
-# Cambia il nodo che ha cambiato meno e in caso di parità quello che ha effettuato il primo cambio per ultimo
+# Changes the agent that appears least in the tree, in case of tie, the last to appears first
 def count_appears(node):
+    # return a dictionary with apparitions of all agents
     if node.player is None:
         return Counter()
     occurrs = Counter([node.player])
@@ -20,6 +21,7 @@ def count_appears(node):
 
 
 def first_to_appears_order(node, players):
+    # return the order in which players appear in the tree
     # Base Case
     if node is None:
         return
@@ -51,6 +53,7 @@ def first_to_appears_order(node, players):
 
 
 def changing_order(tree, game, flag=True):
+    # return the order in which the agent must be changed, flag is used to distinguish Version 2 and 4
     order = []
     occurrences = count_appears(tree)
     occurrences.update(
@@ -75,6 +78,9 @@ def changing_order(tree, game, flag=True):
 
 
 def euch_search(tree, game, des_appr=1, flag=True):
+    # Search a complete mechanism from incomplete
+    # flag is used to distinguish Version 2 and 4
+    # return new tree and the changes made
     changes = {x: 0 for x in game.players}
     # tested_directions = [[value for (_, value) in game.directions.items()]]
     last_agents_changed = []

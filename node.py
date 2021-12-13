@@ -1,4 +1,28 @@
 class Node:
+    """
+    Class represents a node of tree.
+    The tree is the Extensive form of mechanism
+    Parameters
+    ----------
+    solutions: list
+        list of available solutions at the history of node
+
+    player: agent
+        the queried agent
+
+    direction: int
+        the type of query, it must be 0 (for out query) or 1 (for in query)
+
+    bid: int
+        the queried bid to agent
+
+    domains: list
+        domains of all agents at the history of node
+
+    ro: float
+        the approximation of solutions accepted respect to all solutions
+
+    """
     def __init__(self, solutions, player=None, direction=None, bid=None, domains=None, ro=1):
         self.player = player
         self.direction = direction

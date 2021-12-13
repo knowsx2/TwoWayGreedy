@@ -3,7 +3,10 @@ from game import *
 import heapdict
 
 
+# Changes the agent in blocked nodes
+
 def search_last_nodes(node):
+    # Search the blocked nodes
     nodes = []
     if node is None:
         return nodes
@@ -16,6 +19,7 @@ def search_last_nodes(node):
 
 
 def is_ancestor(node, ancestor):
+    # return true if ancestor is an ancestor of node
     if node.parent is None:
         return False
     if node.parent == ancestor:
@@ -24,6 +28,7 @@ def is_ancestor(node, ancestor):
 
 
 def same_player_ancestor(node, domains):
+    # return the oldest ancestor of node and recompute the parameters in the ancestor history
     root = node
     stack = [root]
     new_domains = {key: copy.deepcopy(value) for (key, value) in domains.items()}
@@ -44,6 +49,7 @@ def same_player_ancestor(node, domains):
 
 
 def player_first_nodes(node, player):
+    # Search the first nodes in which player appears
     if node is None:
         return []
     if node.player == player:
@@ -51,18 +57,8 @@ def player_first_nodes(node, player):
     return player_first_nodes(node.no, player) + player_first_nodes(node.yes, player)
 
 
-def old_search_direction(av_dir, last):
-    if not av_dir:
-        return None
-    diffs = heapdict.heapdict()
-    for direction in av_dir:
-        diffs[direction] = sum([abs(direction[i] - last[i]) for i in range(len(last))])
-        if diffs[direction] <= 1:
-            return direction
-    return list(diffs.popitem()[0])
-
-
 def search_direction(av_dir, last):
+    # search a casual direction that is not used changing as few directions as possible
     if not av_dir:
         return None
     queue = [last]
@@ -82,6 +78,7 @@ def search_direction(av_dir, last):
 
 
 def compute_node_appr(node, des_appr=1):
+    # return the remaining approximation in the history of node
     up_node = node
     # n_appr represents the available utility remaining after the node,
     # it needs to not subscribe des_appr that represent the desired approximation of mechanism
@@ -94,8 +91,9 @@ def compute_node_appr(node, des_appr=1):
 
 
 def euch_search(tree, game, des_appr=1):
+    # Search a complete mechanism from incomplete
+    # return new tree and the changes made
     changes = {x: 0 for x in game.players}
-    # tested_directions = [[value for (_, value) in game.directions.items()]]
     av_dir = set(it.product([0, 1], repeat=len(game.players)))
     av_dir.remove(tuple(value for (_, value) in game.directions.items()))
     while not check_solutioned_tree(tree):
@@ -127,7 +125,6 @@ def euch_search(tree, game, des_appr=1):
         for agent in new_directions.keys():
             if last_directions[agent] != new_directions[agent]:
                 changes[agent] += 1
-        # tested_directions += [[value for (_, value) in last_directions.items()]]
         av_dir.remove(tuple([value for (_, value) in new_directions.items()]))
         game.directions = new_directions
         for node in anchestors:
@@ -146,10 +143,9 @@ def euch_search(tree, game, des_appr=1):
     return tree, changes
 
 
-# ciao
 def fill_tree(node, directions, domains, players, des_appr=1):
+    # fill the tree starting from node and parameters.
     solutions, surv_agents = filter_solutions(node.domains, node.solutions)
-    # solutions = check_solutions(node.domains, solutions)
     if len(solutions) <= 1:
         return Node(solutions, ro=1)
     no_domains = copy.copy(domains)
@@ -168,11 +164,8 @@ def fill_tree(node, directions, domains, players, des_appr=1):
         no_players.remove(node.player)
         no_domains.pop(node.player)
         no_solutions = [solution for solution in node.solutions if node.player not in solution]
-    # elif len(no_domains[node.player]) == 1:
-    #   no_solutions = check_solutions(no_domains, solutions)
-    # no_players.remove(node.player)
+
     no_solutions, surv_agents = filter_solutions(no_domains, no_solutions)
-    # no_solutions = check_solutions(no_domains, no_solutions)
     if len(no_solutions) <= 1:
         node.no = Node(no_solutions, ro=1)
     else:
@@ -203,7 +196,6 @@ def fill_tree(node, directions, domains, players, des_appr=1):
             yes_directions[node.player] = node.direction
 
         yes_solutions, surv_agents = filter_solutions(yes_domains, yes_solutions)
-        # yes_solutions = check_solutions(yes_domains, yes_solutions)
         if len(yes_solutions) <= 1:
             node.yes = Node(yes_solutions, ro=1)
         else:
@@ -214,7 +206,8 @@ def fill_tree(node, directions, domains, players, des_appr=1):
             node.yes = next(possible_queries(yes_players, yes_directions, yes_domains, yes_solutions), None)
             if node.yes is None:
                 node.yes = next(
-                    possible_queries(yes_players, yes_directions, yes_domains, yes_solutions, compute_node_appr(node, des_appr)), None)
+                    possible_queries(yes_players, yes_directions, yes_domains, yes_solutions,
+                                     compute_node_appr(node, des_appr)), None)
             if node.yes is not None:
                 node.yes.parent = node
                 fill_tree(node.yes, directions, yes_domains, yes_players, des_appr)
