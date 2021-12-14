@@ -6,7 +6,19 @@ import heapdict
 # Changes the agent in blocked nodes
 
 def search_last_nodes(node):
-    # Search the blocked nodes
+    """
+    Search the blocked nodes
+
+    Parameters
+    ----------
+    node: node
+        the root of tree
+
+    Returns
+    -------
+    nodes: node list
+        list of blocked nodes in the tree
+    """
     nodes = []
     if node is None:
         return nodes
@@ -19,7 +31,22 @@ def search_last_nodes(node):
 
 
 def is_ancestor(node, ancestor):
-    # return true if ancestor is an ancestor of node
+    """
+    verify if ancestor is an ancestor of node
+
+    Parameters
+    ----------
+    node: node
+        a node of tree
+
+    ancestor: node
+        ancestor to verify
+
+    Returns
+    -------
+    Bool
+        True if ancestor is an ancestor of node, False else
+    """
     if node.parent is None:
         return False
     if node.parent == ancestor:
@@ -28,7 +55,29 @@ def is_ancestor(node, ancestor):
 
 
 def same_player_ancestor(node, domains):
-    # return the oldest ancestor of node and recompute the parameters in the ancestor history
+    """
+    search for the oldest ancestor of node with same player and recompute the parameters in the ancestor history
+
+    Parameters
+    ----------
+    node: node
+        a node of tree
+
+    domains: dictionary
+        key: agent, value: in list
+        domains of agents
+
+    Returns
+    -------
+    node: node
+        the oldest ancestor of node
+
+    new_domains: domains dictionary
+        domains for the ancestor history
+
+    agents: agent list
+        agents for the ancestor history
+    """
     root = node
     stack = [root]
     new_domains = {key: copy.deepcopy(value) for (key, value) in domains.items()}
@@ -49,7 +98,22 @@ def same_player_ancestor(node, domains):
 
 
 def player_first_nodes(node, player):
-    # Search the first nodes in which player appears
+    """
+    Search the first nodes in which player appears
+
+    Parameters
+    ----------
+    node: node
+        the root of tree
+
+    player: agent
+        player want to search
+
+    Returns
+    -------
+    nodes: node list
+        list of first nodes in which player appears
+    """
     if node is None:
         return []
     if node.player == player:
@@ -58,7 +122,22 @@ def player_first_nodes(node, player):
 
 
 def search_direction(av_dir, last):
-    # search a casual direction that is not used changing as few directions as possible
+    """
+    search a casual direction that is not used changing as few directions as possible
+
+    Parameters
+    ----------
+    av_dir: directions list
+        available directions not used in the searching
+
+    last: direction
+        last direction used
+
+    Returns
+    -------
+    new_dir: direction
+        new directions to use in the search
+    """
     if not av_dir:
         return None
     queue = [last]
@@ -78,7 +157,22 @@ def search_direction(av_dir, last):
 
 
 def compute_node_appr(node, des_appr=1):
-    # return the remaining approximation in the history of node
+    """
+    return the remaining approximation in the history of node
+
+    Parameters
+    ----------
+    node: node
+        node that would compute approximation
+
+    des_appr: float
+        desired approximation of the solution
+
+    Returns
+    -------
+    n_appr: float
+        The remaining approximation for the node
+    """
     up_node = node
     # n_appr represents the available utility remaining after the node,
     # it needs to not subscribe des_appr that represent the desired approximation of mechanism
@@ -91,8 +185,28 @@ def compute_node_appr(node, des_appr=1):
 
 
 def euch_search(tree, game, des_appr=1):
-    # Search a complete mechanism from incomplete
-    # return new tree and the changes made
+    """
+    Search a complete mechanism from incomplete
+
+    Parameters
+    ----------
+    tree: node
+        Root of a tree
+
+    game: game
+
+    des_appr: float
+        desired approximation of the solution
+
+    Returns
+    -------
+    tree: node
+        the root of the new tree
+
+    changes: dictionary
+        key: agent, value: int represents the number of changes for the key player
+
+    """
     changes = {x: 0 for x in game.players}
     av_dir = set(it.product([0, 1], repeat=len(game.players)))
     av_dir.remove(tuple(value for (_, value) in game.directions.items()))
@@ -144,7 +258,32 @@ def euch_search(tree, game, des_appr=1):
 
 
 def fill_tree(node, directions, domains, players, des_appr=1):
-    # fill the tree starting from node and parameters.
+    """
+    fill the tree starting from node and parameters.
+
+    Parameters
+    ----------
+    node: node
+        the node where from start to fill
+
+    directions: int list
+        list of directions for the agents
+
+    domains: dictionary
+        dictionary represented the domains of agents
+        key: agent, value: int list
+
+    players: agent list
+       list of agents in the game
+
+    des_appr: float
+        approximation desired
+
+    Returns
+    -------
+    node:
+       the node filled
+    """
     solutions, surv_agents = filter_solutions(node.domains, node.solutions)
     if len(solutions) <= 1:
         return Node(solutions, ro=1)

@@ -1,10 +1,31 @@
 from algorithmsV2 import *
 
+
 # Changes the last agent to appears first
 
-def euch_search(tree, game, des_appr = 1):
-    # Search a complete mechanism from incomplete
-    # return new tree and the changes made
+def euch_search(tree, game, des_appr=1):
+    """
+    Search a complete mechanism from incomplete
+
+    Parameters
+    ----------
+    tree: node
+        Root of a tree
+
+    game: game
+
+    des_appr: float
+        desired approximation of the solution
+
+    Returns
+    -------
+    tree: node
+        the root of the new tree
+
+    changes: dictionary
+        key: agent, value: int represents the number of changes for the key player
+
+    """
     changes = {x: 0 for x in game.players}
     last_agents_changed = []
     av_dir = set(it.product([0, 1], repeat=len(game.directions.keys())))
@@ -29,7 +50,8 @@ def euch_search(tree, game, des_appr = 1):
                 return None, changes
             else:
                 new_directions = {game.players[i]: dir[i] for i in range(len(game.players))}
-                change_agents = [agent for agent in list(new_directions.keys()) if last_directions[agent] != new_directions[agent]]
+                change_agents = [agent for agent in list(new_directions.keys()) if
+                                 last_directions[agent] != new_directions[agent]]
                 for player in change_agents:
                     anchestors += player_first_nodes(tree, player)
                 for node in search_last_nodes(tree):
@@ -38,7 +60,8 @@ def euch_search(tree, game, des_appr = 1):
         else:
             anchestors += player_first_nodes(tree, agent_to_change)
         last_nodes = search_last_nodes(tree)
-        anchestors += [x for x in last_nodes if x not in anchestors and all([not is_ancestor(x, k) for k in anchestors])]
+        anchestors += [x for x in last_nodes if
+                       x not in anchestors and all([not is_ancestor(x, k) for k in anchestors])]
         for agent in new_directions.keys():
             if last_directions[agent] != new_directions[agent]:
                 changes[agent] += 1
